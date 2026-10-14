@@ -10,6 +10,7 @@ class AndroidLibraryComposeConventionPlugin: Plugin<Project> {
             with(pluginManager){
                 apply("clearspend.android.library")
                 apply("org.jetbrains.kotlin.plugin.compose")
+                apply("org.jetbrains.kotlin.plugin.parcelize")
             }
             val extensionType = extensions.getByType<LibraryExtension>()
             configureAndroidCompose(

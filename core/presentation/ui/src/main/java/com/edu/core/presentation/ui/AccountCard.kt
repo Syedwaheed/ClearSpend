@@ -16,58 +16,58 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.edu.core.domain.model.Account
-import com.edu.core.domain.model.Balance
-import com.edu.core.presentation.designsystem.CardNavy
+import com.edu.core.presentation.designsystem.Navy2
+import com.edu.core.presentation.designsystem.OnNavy
+import com.edu.core.presentation.designsystem.OnNavyMuted
 import com.edu.core.presentation.designsystem.Spacing
-import com.edu.core.presentation.designsystem.TextPrimary
-import com.edu.core.presentation.designsystem.TextSecondary
 import com.edu.core.presentation.designsystem.cardShape
 import com.edu.core.presentation.designsystem.chipShape
-import java.text.NumberFormat
-import java.util.Locale
+import com.edu.core.presentation.ui.model.AccountUi
+import com.edu.core.presentation.ui.model.BalanceUi
 
 @Composable
 fun AccountCard(
-    account: Account,
+    account: AccountUi,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    balance: Balance? = null
+    balance: BalanceUi? = null,
 ) {
     Card(
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),
         shape = cardShape,
-        colors = CardDefaults.cardColors(containerColor = CardNavy),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        colors = CardDefaults.cardColors(containerColor = Navy2),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
     ) {
         Column(modifier = Modifier.padding(Spacing.md)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 ProviderLogo(
-                    logoUrl = account.provider.logoUrl,
-                    providerName = account.provider.displayName
+                    logoUrl = account.providerLogoUri,
+                    providerName = account.providerDisplayName,
                 )
 
                 Box(
                     modifier = Modifier
-                        .background(color = Color.White.copy(alpha = 0.1f), shape = chipShape)
-                        .padding(horizontal = Spacing.sm, vertical = Spacing.xs)
+                        .background(
+                            color = Color(account.accountTypeColorArgb).copy(alpha = 0.18f),
+                            shape = chipShape,
+                        )
+                        .padding(horizontal = Spacing.sm, vertical = Spacing.xs),
                 ) {
                     Text(
-                        text = account.accountType,
+                        text = account.accountTypeBadge,
                         style = MaterialTheme.typography.labelSmall,
-                        color = TextPrimary
+                        color = OnNavy,
                     )
                 }
             }
@@ -78,22 +78,24 @@ fun AccountCard(
                 text = account.displayName,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = TextPrimary
+                color = OnNavy,
             )
 
             Spacer(modifier = Modifier.height(Spacing.xs))
 
-            Text(
-                text = maskedAccountNumber(account.accountNumber.number),
-                style = MaterialTheme.typography.bodyMedium,
-                color = TextSecondary
-            )
-
-            account.accountNumber.sortCode?.let { sortCode ->
+            (account.maskedAccountNumber ?: account.maskedIban)?.let { masked ->
                 Text(
-                    text = "Sort code: ${formatSortCode(sortCode)}",
+                    text = masked,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = OnNavyMuted,
+                )
+            }
+
+            account.formattedSortCode?.let { sortCode ->
+                Text(
+                    text = "Sort code: $sortCode",
                     style = MaterialTheme.typography.labelSmall,
-                    color = TextSecondary
+                    color = OnNavyMuted,
                 )
             }
 
@@ -102,14 +104,13 @@ fun AccountCard(
             if (balance != null) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
+                    horizontalArrangement = Arrangement.End,
                 ) {
-                    val formatter = remember { NumberFormat.getCurrencyInstance(Locale.UK) }
                     Text(
-                        text = formatter.format(balance.available),
+                        text = balance.formattedAvailable,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = TextPrimary
+                        color = OnNavy,
                     )
                 }
             }
@@ -125,30 +126,20 @@ private fun ProviderLogo(logoUrl: String?, providerName: String) {
             contentDescription = providerName,
             modifier = Modifier
                 .size(32.dp)
-                .background(color = Color.White, shape = CircleShape)
+                .background(color = Color.White, shape = CircleShape),
         )
     } else {
         Box(
             modifier = Modifier
                 .size(32.dp)
                 .background(color = Color.White.copy(alpha = 0.15f), shape = CircleShape),
-            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.Center,
         ) {
             Text(
                 text = providerName.take(1).uppercase(),
                 style = MaterialTheme.typography.labelSmall,
-                color = TextPrimary
+                color = OnNavy,
             )
         }
     }
-}
-
-private fun maskedAccountNumber(number: String?): String {
-    val lastFour = number?.takeLast(4).orEmpty()
-    return "•••• $lastFour"
-}
-
-private fun formatSortCode(sortCode: String): String {
-    val digits = sortCode.filter { it.isDigit() }
-    return digits.chunked(2).joinToString("-")
 }

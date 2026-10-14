@@ -19,10 +19,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.edu.core.presentation.designsystem.ElectricBlue
-import com.edu.core.presentation.designsystem.NavyBackground
+import com.edu.core.presentation.designsystem.Blue
+import com.edu.core.presentation.designsystem.Navy
 import com.edu.core.presentation.designsystem.Spacing
-import com.edu.core.presentation.designsystem.TextPrimary
+import com.edu.core.presentation.designsystem.OnNavy
 
 @Composable
 fun ClearSpendTopBar(
@@ -34,7 +34,7 @@ fun ClearSpendTopBar(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .background(NavyBackground)
+            .background(Navy)
             .padding(horizontal = Spacing.lg, vertical = Spacing.md),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
@@ -42,7 +42,7 @@ fun ClearSpendTopBar(
         Box(
             modifier = Modifier
                 .size(40.dp)
-                .background(color = ElectricBlue, shape = CircleShape)
+                .background(color = Blue, shape = CircleShape)
                 .clickable(onClick = onAvatarClick),
             contentAlignment = Alignment.Center
         ) {
@@ -50,20 +50,20 @@ fun ClearSpendTopBar(
                 text = initialsFor(userName),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = TextPrimary
+                color = OnNavy
             )
         }
 
         Text(
             text = "Good morning, $userName",
             style = MaterialTheme.typography.titleMedium,
-            color = TextPrimary
+            color = OnNavy
         )
 
         Icon(
             imageVector = Icons.Filled.Notifications,
             contentDescription = "Notifications",
-            tint = TextPrimary,
+            tint = OnNavy,
             modifier = Modifier
                 .size(28.dp)
                 .clickable(onClick = onNotificationClick)

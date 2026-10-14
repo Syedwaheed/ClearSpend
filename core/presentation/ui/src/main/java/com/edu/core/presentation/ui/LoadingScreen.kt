@@ -12,7 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import com.edu.core.presentation.designsystem.ElectricBlue
+import com.edu.core.presentation.designsystem.Blue
 import com.edu.core.presentation.designsystem.Spacing
 
 @Composable
@@ -28,7 +28,7 @@ fun LoadingScreen(modifier: Modifier = Modifier) {
             fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.height(Spacing.lg))
-        CircularProgressIndicator(color = ElectricBlue)
+        CircularProgressIndicator(color = Blue)
         Spacer(modifier = Modifier.height(Spacing.md))
         Text(
             text = "Loading...",

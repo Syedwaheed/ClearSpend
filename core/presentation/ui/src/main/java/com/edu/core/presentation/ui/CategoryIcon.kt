@@ -21,47 +21,36 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.edu.core.presentation.designsystem.MintGreen
-
-private val Orange = Color(0xFFFF9800)
-private val Purple = Color(0xFF9C27B0)
-private val Blue = Color(0xFF2196F3)
-private val Teal = Color(0xFF009688)
-private val Grey = Color(0xFF757575)
-private val Green = Color(0xFF4CAF50)
-
-private data class CategoryStyle(val color: Color, val icon: ImageVector)
-
-private fun categoryStyleFor(category: String): CategoryStyle = when (category) {
-    "PURCHASE" -> CategoryStyle(Orange, Icons.Filled.ShoppingCart)
-    "DIRECT_DEBIT" -> CategoryStyle(Purple, Icons.Filled.Repeat)
-    "BILL_PAYMENT" -> CategoryStyle(Blue, Icons.Filled.Receipt)
-    "TRANSFER" -> CategoryStyle(Teal, Icons.Filled.SwapHoriz)
-    "ATM" -> CategoryStyle(Grey, Icons.Filled.LocalAtm)
-    "CASH" -> CategoryStyle(Green, Icons.Filled.AttachMoney)
-    "CREDIT" -> CategoryStyle(MintGreen, Icons.Filled.ArrowDownward)
-    else -> CategoryStyle(Grey, Icons.AutoMirrored.Filled.HelpOutline)
-}
 
 @Composable
 fun CategoryIcon(
-    category: String,
+    iconId: String,
+    colorArgb: Int,
     modifier: Modifier = Modifier,
-    size: Dp = 40.dp
+    size: Dp = 40.dp,
 ) {
-    val style = categoryStyleFor(category)
-
     Box(
         modifier = modifier
             .size(size)
-            .background(color = style.color, shape = CircleShape),
-        contentAlignment = Alignment.Center
+            .background(color = Color(colorArgb), shape = CircleShape),
+        contentAlignment = Alignment.Center,
     ) {
         Icon(
-            imageVector = style.icon,
-            contentDescription = category,
+            imageVector = iconFor(iconId),
+            contentDescription = iconId,
             tint = Color.White,
-            modifier = Modifier.size(size / 2)
+            modifier = Modifier.size(size / 2),
         )
     }
+}
+
+private fun iconFor(iconId: String): ImageVector = when (iconId) {
+    "shopping_cart" -> Icons.Filled.ShoppingCart
+    "repeat" -> Icons.Filled.Repeat
+    "receipt" -> Icons.Filled.Receipt
+    "swap_horiz" -> Icons.Filled.SwapHoriz
+    "local_atm" -> Icons.Filled.LocalAtm
+    "attach_money" -> Icons.Filled.AttachMoney
+    "arrow_downward" -> Icons.Filled.ArrowDownward
+    else -> Icons.AutoMirrored.Filled.HelpOutline
 }

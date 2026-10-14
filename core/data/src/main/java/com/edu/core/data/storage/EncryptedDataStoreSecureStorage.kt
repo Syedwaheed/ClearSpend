@@ -1,4 +1,4 @@
-package com.edu.data.storage
+package com.edu.core.data.storage
 
 import android.content.Context
 import androidx.datastore.core.DataStore

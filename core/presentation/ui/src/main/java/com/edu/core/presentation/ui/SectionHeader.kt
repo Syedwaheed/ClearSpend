@@ -10,7 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import com.edu.core.presentation.designsystem.ElectricBlue
+import com.edu.core.presentation.designsystem.Blue
 
 @Composable
 fun SectionHeader(
@@ -32,7 +32,7 @@ fun SectionHeader(
             Text(
                 text = "See all",
                 style = MaterialTheme.typography.bodyMedium,
-                color = ElectricBlue,
+                color = Blue,
                 modifier = Modifier.clickable(onClick = onSeeAllClick)
             )
         }

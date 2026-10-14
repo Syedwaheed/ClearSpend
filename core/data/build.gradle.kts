@@ -13,4 +13,6 @@ dependencies {
     implementation(projects.core.network)
     implementation(libs.androidx.google.tink)
     implementation(libs.androidx.datastore.preference)
+
+    testImplementation(libs.kotlinx.coroutines.test)
 }
