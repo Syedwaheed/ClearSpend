@@ -16,4 +16,5 @@ fun DependencyHandlerScope.addUiLayerDependency(project: Project){
     "androidTestImplementation"(project.libs.findLibrary("androidx.compose.ui.test.junit4").get())
 
     "implementation"(project.libs.findLibrary("androidx-navigation3-ui").get())
+    "implementation"(project.libs.findLibrary("androidx-lifecycle-viewmodel-savedstate").get())
 }

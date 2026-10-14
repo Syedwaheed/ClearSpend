@@ -12,6 +12,7 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.request.url
 import io.ktor.client.statement.HttpResponse
+import io.ktor.serialization.JsonConvertException
 import io.ktor.util.network.UnresolvedAddressException
 import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.SerializationException
@@ -61,17 +62,19 @@ suspend inline fun <reified Request : Any, reified Response : Any> HttpClient.de
 suspend inline fun <reified T> safeCall(
     execute: () -> HttpResponse
 ): Result<T, DataError.NetworkError> {
-    val response = try {
-        execute()
+    return try {
+        val response = execute()
+        responseToResult(response)
     } catch (e: UnresolvedAddressException) {
-        return Result.Error(DataError.NetworkError.NO_INTERNET)
+        Result.Error(DataError.NetworkError.NO_INTERNET)
     } catch (e: SerializationException) {
-        return Result.Error(DataError.NetworkError.SERIALIZATION)
+        Result.Error(DataError.NetworkError.SERIALIZATION)
+    } catch (e: JsonConvertException) {
+        Result.Error(DataError.NetworkError.SERIALIZATION)
     } catch (e: Exception) {
         if (e is CancellationException) throw e
-        return Result.Error(DataError.NetworkError.UNKNOWN)
+        Result.Error(DataError.NetworkError.UNKNOWN)
     }
-    return responseToResult(response)
 }
 
 suspend inline fun <reified T> responseToResult(

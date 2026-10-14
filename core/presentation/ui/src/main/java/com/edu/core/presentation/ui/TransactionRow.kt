@@ -13,57 +13,56 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import com.edu.core.domain.model.Transaction
+import com.edu.core.presentation.designsystem.OnSurfaceVariant
 import com.edu.core.presentation.designsystem.Spacing
-import com.edu.core.presentation.designsystem.TextSecondary
-import java.time.format.DateTimeFormatter
-import java.util.Locale
-
-private val dateFormatter = DateTimeFormatter.ofPattern("dd MMM", Locale.UK)
+import com.edu.core.presentation.ui.model.TransactionUi
 
 @Composable
 fun TransactionRow(
-    transaction: Transaction,
+    transaction: TransactionUi,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.clickable(onClick = onClick)) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = Spacing.md, vertical = Spacing.sm),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            CategoryIcon(category = transaction.category)
+            CategoryIcon(iconId = transaction.categoryIconId, colorArgb = transaction.categoryColorArgb)
 
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(horizontal = Spacing.sm)
+                    .padding(horizontal = Spacing.sm),
             ) {
                 Text(
-                    text = transaction.merchantName,
+                    text = transaction.title,
                     style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
                 )
-                Row(horizontalArrangement = Arrangement.spacedBy(Spacing.xs)) {
+                Text(
+                    text = transaction.subtitle,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = OnSurfaceVariant,
+                )
+            }
+
+            Column(horizontalAlignment = Alignment.End) {
+                AmountText(
+                    formattedAmount = transaction.formattedAmount,
+                    colorArgb = transaction.amountColorArgb,
+                    textStyle = MaterialTheme.typography.bodyMedium,
+                )
+                transaction.formattedRunningBalance?.let { balance ->
                     Text(
-                        text = transaction.category,
+                        text = balance,
                         style = MaterialTheme.typography.labelSmall,
-                        color = TextSecondary
-                    )
-                    Text(
-                        text = transaction.date.format(dateFormatter),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = TextSecondary
+                        color = OnSurfaceVariant,
                     )
                 }
             }
-
-            AmountText(
-                amount = transaction.amount,
-                textStyle = MaterialTheme.typography.bodyMedium
-            )
         }
         HorizontalDivider()
     }

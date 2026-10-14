@@ -1,4 +1,4 @@
-package com.edu.convention
+ package com.edu.convention
 
 import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.BuildType
@@ -17,17 +17,23 @@ internal fun Project.configureBuildType(
         is LibraryExtension -> commonExtension.buildFeatures.buildConfig = true
     }
 
-    val apiReadAccessToken = gradleLocalProperties(rootDir,providers).getProperty("API_READ_ACCESS_TOKEN")
+    val localProperties = gradleLocalProperties(rootDir, providers)
+    val trueLayerConfig = TrueLayerBuildConfig(
+        clientId = localProperties.getProperty("TRUELAYER_CLIENT_ID").orEmpty(),
+        clientSecret = localProperties.getProperty("TRUELAYER_CLIENT_SECRET").orEmpty(),
+        redirectUri = localProperties.getProperty("TRUELAYER_REDIRECT_URI").orEmpty(),
+        sandbox = localProperties.getProperty("TRUELAYER_SANDBOX") ?: "true",
+    )
     when(extensionType){
         ExtensionType.APPLICATION ->{
             extensions.configure<ApplicationExtension>{
 
                 buildTypes{
                     debug {
-                        configureDebugBuildType(apiReadAccessToken)
+                        configureDebugBuildType(trueLayerConfig)
                     }
                     release {
-                        configureReleaseBuildType(commonExtension,apiReadAccessToken)
+                        configureReleaseBuildType(commonExtension, extensionType, trueLayerConfig)
                     }
                 }
             }
@@ -37,10 +43,10 @@ internal fun Project.configureBuildType(
 
                 buildTypes{
                     debug {
-                        configureDebugBuildType(apiReadAccessToken)
+                        configureDebugBuildType(trueLayerConfig)
                     }
                     release {
-                        configureReleaseBuildType(commonExtension,apiReadAccessToken)
+                        configureReleaseBuildType(commonExtension, extensionType, trueLayerConfig)
                     }
                 }
             }
@@ -48,20 +54,37 @@ internal fun Project.configureBuildType(
     }
 }
 
-private fun BuildType.configureDebugBuildType(apiReadAccessToken:String?){
-    buildConfigField("String","API_READ_ACCESS_TOKEN","\"$apiReadAccessToken\"")
-    buildConfigField("String","BASE_URL","\"https://api.themoviedb.org/3/\"")
-    buildConfigField("String","IMAGE_BASE_URL","\"https://image.tmdb.org/t/p/\"")
+internal data class TrueLayerBuildConfig(
+    val clientId: String,
+    val clientSecret: String,
+    val redirectUri: String,
+    val sandbox: String,
+)
+
+private fun BuildType.configureDebugBuildType(trueLayerConfig: TrueLayerBuildConfig){
+    buildConfigField("String", "TRUELAYER_CLIENT_ID", "\"${trueLayerConfig.clientId}\"")
+    buildConfigField("String", "TRUELAYER_CLIENT_SECRET", "\"${trueLayerConfig.clientSecret}\"")
+    buildConfigField("String", "TRUELAYER_REDIRECT_URI", "\"${trueLayerConfig.redirectUri}\"")
+    buildConfigField("boolean", "TRUELAYER_SANDBOX", trueLayerConfig.sandbox)
 }
 private fun BuildType.configureReleaseBuildType(
     commonExtension: CommonExtension,
-    apiReadAccessToken:String?
+    extensionType: ExtensionType,
+    trueLayerConfig: TrueLayerBuildConfig,
 ){
-    buildConfigField("String","API_READ_ACCESS_TOKEN","\"$apiReadAccessToken\"")
-    buildConfigField("String","BASE_URL","\"https://api.themoviedb.org/3/\"")
-    buildConfigField("String","IMAGE_BASE_URL","\"https://image.tmdb.org/t/p/\"")
-    isMinifyEnabled = true
-    
+    buildConfigField("String", "TRUELAYER_CLIENT_ID", "\"${trueLayerConfig.clientId}\"")
+    buildConfigField("String", "TRUELAYER_CLIENT_SECRET", "\"${trueLayerConfig.clientSecret}\"")
+    buildConfigField("String", "TRUELAYER_REDIRECT_URI", "\"${trueLayerConfig.redirectUri}\"")
+    buildConfigField("boolean", "TRUELAYER_SANDBOX", trueLayerConfig.sandbox)
+
+    // Library modules are never minified on their own — R8 only sees each
+    // library's own narrow consumer rules in isolation and strips symbols the
+    // app layer still needs (e.g. public Composables with no local keep rule).
+    // Shrinking/obfuscation happens exactly once, in :app's release build.
+    if (extensionType == ExtensionType.APPLICATION) {
+        isMinifyEnabled = true
+    }
+
     val proguardFile = when(commonExtension) {
         is ApplicationExtension -> commonExtension.getDefaultProguardFile("proguard-android-optimize.txt")
         is LibraryExtension -> commonExtension.getDefaultProguardFile("proguard-android-optimize.txt")

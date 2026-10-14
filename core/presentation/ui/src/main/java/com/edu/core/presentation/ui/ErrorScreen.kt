@@ -18,8 +18,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.edu.core.presentation.designsystem.ElectricBlue
-import com.edu.core.presentation.designsystem.ErrorRed
+import com.edu.core.presentation.designsystem.Blue
+import com.edu.core.presentation.designsystem.Error
 import com.edu.core.presentation.designsystem.Spacing
 import com.edu.core.presentation.designsystem.buttonShape
 
@@ -39,7 +39,7 @@ fun ErrorScreen(
         Icon(
             imageVector = Icons.Filled.ErrorOutline,
             contentDescription = null,
-            tint = ErrorRed,
+            tint = Error,
             modifier = Modifier.height(48.dp)
         )
         Spacer(modifier = Modifier.height(Spacing.md))
@@ -52,7 +52,7 @@ fun ErrorScreen(
         Button(
             onClick = onRetry,
             shape = buttonShape,
-            colors = ButtonDefaults.buttonColors(containerColor = ElectricBlue)
+            colors = ButtonDefaults.buttonColors(containerColor = Blue)
         ) {
             Text(text = "Try Again")
         }

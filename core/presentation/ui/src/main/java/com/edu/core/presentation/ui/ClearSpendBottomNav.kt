@@ -26,9 +26,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import com.edu.core.presentation.designsystem.ElectricBlue
-import com.edu.core.presentation.designsystem.NavyBackground
-import com.edu.core.presentation.designsystem.TextSecondary
+import com.edu.core.presentation.designsystem.Blue
+import com.edu.core.presentation.designsystem.Navy
+import com.edu.core.presentation.designsystem.OnNavyMuted
 
 private data class BottomNavTab(val icon: ImageVector, val label: String)
 
@@ -52,7 +52,7 @@ fun ClearSpendBottomNav(
         modifier = modifier
             .fillMaxWidth()
             .height(80.dp)
-            .background(NavyBackground),
+            .background(Navy),
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -79,7 +79,7 @@ private fun RegularTab(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val color = if (isSelected) ElectricBlue else TextSecondary
+    val color = if (isSelected) Blue else OnNavyMuted
     Column(
         modifier = Modifier
             .fillMaxHeight()
@@ -112,7 +112,7 @@ private fun CentreTab(
         Box(
             modifier = Modifier
                 .size(56.dp)
-                .background(color = ElectricBlue, shape = CircleShape)
+                .background(color = Blue, shape = CircleShape)
                 .clickable(onClick = onClick),
             contentAlignment = Alignment.Center
         ) {
@@ -125,7 +125,7 @@ private fun CentreTab(
         Text(
             text = tab.label,
             style = MaterialTheme.typography.labelSmall,
-            color = ElectricBlue
+            color = Blue
         )
     }
 }

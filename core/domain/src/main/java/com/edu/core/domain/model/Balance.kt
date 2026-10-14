@@ -1,8 +1,13 @@
 package com.edu.core.domain.model
 
+import java.math.BigDecimal
+import java.time.Instant
+
 data class Balance(
-    val available: Double,
-    val current: Double,
-    val overdraft: Double = 0.0,
-    val currency: String = "GBP"
+    val accountId: String,
+    val available: BigDecimal,
+    val current: BigDecimal,
+    val overdraft: BigDecimal = BigDecimal.ZERO,
+    val currency: String = "GBP",
+    val updateTimestamp: Instant,
 )

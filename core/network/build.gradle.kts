@@ -11,4 +11,8 @@ android {
 
 dependencies {
     implementation(projects.core.domain)
+    implementation(libs.timber)
+
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.ktor.client.mock)
 }

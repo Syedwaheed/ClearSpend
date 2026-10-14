@@ -18,9 +18,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.edu.core.presentation.designsystem.ElectricBlue
+import com.edu.core.presentation.designsystem.Blue
 import com.edu.core.presentation.designsystem.Spacing
-import com.edu.core.presentation.designsystem.TextSecondary
+import com.edu.core.presentation.designsystem.OnSurfaceVariant
 import com.edu.core.presentation.designsystem.buttonShape
 
 @Composable
@@ -42,7 +42,7 @@ fun EmptyStateScreen(
         Icon(
             imageVector = icon,
             contentDescription = null,
-            tint = TextSecondary,
+            tint = OnSurfaceVariant,
             modifier = Modifier.height(64.dp)
         )
         Spacer(modifier = Modifier.height(Spacing.md))
@@ -56,7 +56,7 @@ fun EmptyStateScreen(
         Text(
             text = subtitle,
             style = MaterialTheme.typography.bodyMedium,
-            color = TextSecondary,
+            color = OnSurfaceVariant,
             textAlign = TextAlign.Center
         )
         if (ctaText != null && onCtaClick != null) {
@@ -64,7 +64,7 @@ fun EmptyStateScreen(
             Button(
                 onClick = onCtaClick,
                 shape = buttonShape,
-                colors = ButtonDefaults.buttonColors(containerColor = ElectricBlue)
+                colors = ButtonDefaults.buttonColors(containerColor = Blue)
             ) {
                 Text(text = ctaText)
             }
