@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "464920555203",
+    "project_id": "clearspend-fd1dd",
+    "storage_bucket": "clearspend-fd1dd.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:464920555203:android:92bee8986b9b04822efc76",
+        "android_client_info": {
+          "package_name": "com.edu.clearspend"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDkKTg6JHoeO3GBW66tkOxO6Andk8R_Gcw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,22 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+plugins {
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.kotlin.android) apply false
+    alias(libs.plugins.kotlin.compose) apply false
+
+    alias(libs.plugins.android.library) apply false
+    alias(libs.plugins.kotlin.serialization) apply false
+    alias(libs.plugins.ksp) apply false
+    alias(libs.plugins.room)
+    alias(libs.plugins.google.services) apply false
+    alias(libs.plugins.jetbrains.kotlin.jvm) apply false
+
+}
+
+tasks.register("clean", Delete::class) {
+    delete(layout.buildDirectory)
+}
+
+gradle.startParameter.excludedTaskNames.addAll(
+    gradle.startParameter.taskNames.filter { it.contains("testClasses") }
+)

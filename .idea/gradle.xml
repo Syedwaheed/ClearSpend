@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GradleMigrationSettings" migrationVersion="1" />
+  <component name="GradleSettings">
+    <option name="linkedExternalProjectsSettings">
+      <GradleProjectSettings>
+        <compositeConfiguration>
+          <compositeBuild compositeDefinitionSource="SCRIPT">
+            <builds>
+              <build path="$PROJECT_DIR$/build-logic" name="build-logic">
+                <projects>
+                  <project path="$PROJECT_DIR$/build-logic" />
+                  <project path="$PROJECT_DIR$/build-logic/convention" />
+                </projects>
+              </build>
+            </builds>
+          </compositeBuild>
+        </compositeConfiguration>
+        <option name="testRunner" value="CHOOSE_PER_TEST" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/build-logic" />
+            <option value="$PROJECT_DIR$/build-logic/convention" />
+            <option value="$PROJECT_DIR$/core" />
+            <option value="$PROJECT_DIR$/core/data" />
+            <option value="$PROJECT_DIR$/core/database" />
+            <option value="$PROJECT_DIR$/core/domain" />
+            <option value="$PROJECT_DIR$/core/network" />
+            <option value="$PROJECT_DIR$/core/presentation" />
+            <option value="$PROJECT_DIR$/core/presentation/designsystem" />
+            <option value="$PROJECT_DIR$/core/presentation/ui" />
+            <option value="$PROJECT_DIR$/feature" />
+            <option value="$PROJECT_DIR$/feature/accounts" />
+            <option value="$PROJECT_DIR$/feature/accounts/data" />
+            <option value="$PROJECT_DIR$/feature/accounts/domain" />
+            <option value="$PROJECT_DIR$/feature/accounts/presentation" />
+            <option value="$PROJECT_DIR$/feature/analytics" />
+            <option value="$PROJECT_DIR$/feature/analytics/data" />
+            <option value="$PROJECT_DIR$/feature/analytics/domain" />
+            <option value="$PROJECT_DIR$/feature/analytics/presentation" />
+            <option value="$PROJECT_DIR$/feature/auth" />
+            <option value="$PROJECT_DIR$/feature/auth/data" />
+            <option value="$PROJECT_DIR$/feature/auth/domain" />
+            <option value="$PROJECT_DIR$/feature/auth/presentation" />
+            <option value="$PROJECT_DIR$/feature/dashboard" />
+            <option value="$PROJECT_DIR$/feature/dashboard/data" />
+            <option value="$PROJECT_DIR$/feature/dashboard/domain" />
+            <option value="$PROJECT_DIR$/feature/dashboard/presentation" />
+            <option value="$PROJECT_DIR$/feature/payments" />
+            <option value="$PROJECT_DIR$/feature/payments/data" />
+            <option value="$PROJECT_DIR$/feature/payments/domain" />
+            <option value="$PROJECT_DIR$/feature/payments/presentation" />
+            <option value="$PROJECT_DIR$/feature/transactions" />
+            <option value="$PROJECT_DIR$/feature/transactions/data" />
+            <option value="$PROJECT_DIR$/feature/transactions/domain" />
+            <option value="$PROJECT_DIR$/feature/transactions/presentation" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+    </option>
+  </component>
+</project>
