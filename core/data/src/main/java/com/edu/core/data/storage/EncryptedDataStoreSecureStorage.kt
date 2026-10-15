@@ -10,6 +10,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.edu.core.domain.storage.SecureDataStorage
 import com.google.crypto.tink.Aead
 import com.google.crypto.tink.KeyTemplates
+import com.google.crypto.tink.RegistryConfiguration
 import com.google.crypto.tink.aead.AeadConfig
 import com.google.crypto.tink.integration.android.AndroidKeysetManager
 import kotlinx.coroutines.flow.first
@@ -36,7 +37,7 @@ class EncryptedDataStoreSecureStorage(
             .withMasterKeyUri("android-keystore://session_key")
             .build()
             .keysetHandle
-        aead = keysetHandle.getPrimitive(Aead::class.java)
+        aead = keysetHandle.getPrimitive(RegistryConfiguration.get(), Aead::class.java)
     }
 
 
