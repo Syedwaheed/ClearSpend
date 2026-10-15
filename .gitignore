@@ -12,4 +12,5 @@
 /captures
 .externalNativeBuild
 .cxx
+/BUILD_PROMPTS.md
 /designs/
