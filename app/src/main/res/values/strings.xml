@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">ClearSpend</string>
+    <string name="splash_tagline">Your finances, clear and simple</string>
+    <string name="splash_powered_by">Powered by TrueLayer</string>
 </resources>

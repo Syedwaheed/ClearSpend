@@ -33,6 +33,11 @@ dependencies {
     //Navigation 3
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.androidx.navigation3.ui)
+    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
+    implementation(libs.androidx.lifecycle.viewmodel.savedstate)
+    implementation(libs.androidx.compose.material.icons.extended)
+    // FragmentActivity host for BiometricPrompt (screen 08)
+    implementation(libs.androidx.biometric)
     //KotlinxSerialization
     implementation(libs.kotlinx.serialization.json)
 
@@ -45,6 +50,9 @@ dependencies {
     implementation(libs.androidx.datastore.preference)
 
     testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockk)
+    testImplementation(libs.turbine)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))

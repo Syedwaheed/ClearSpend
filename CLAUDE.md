@@ -1087,13 +1087,18 @@ https://auth.truelayer-sandbox.com/
   &client_id={CLIENT_ID}
   &scope=info accounts balance cards transactions direct_debits standing_orders offline_access
   &redirect_uri=clearspend://callback
-  &providers=mock
+  &providers=uk-cs-mock uk-ob-all uk-oauth-all
   &state={RANDOM_STATE}
 ```
-(scopes are space-separated and URL-encoded when the URL
-is built; generate a random `state`, keep it in memory or
-SavedStateHandle, and reject the callback if it does not
-match)
+(scopes and providers are space-separated and URL-encoded
+when the URL is built. `uk-cs-mock` is the sandbox Mock
+bank (login john / doe) and is ALWAYS included in sandbox.
+With no bank picked on Bank Selection (06) the providers
+are `uk-cs-mock uk-ob-all uk-oauth-all` (DESIGN_SPEC §1.1);
+picking a bank sends `uk-cs-mock <provider_id>`, e.g.
+`uk-cs-mock ob-barclays` (DESIGN_SPEC §1.3). Generate a
+random `state`, keep it until the callback arrives, and
+reject the callback if it does not match; it is single-use.)
 
 Step 2 — Open Chrome Custom Tab with URL
 
