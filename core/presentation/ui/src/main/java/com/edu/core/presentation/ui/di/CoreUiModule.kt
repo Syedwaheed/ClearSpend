@@ -10,6 +10,10 @@ import com.edu.core.presentation.ui.mapper.AccountUiMapper
 import com.edu.core.presentation.ui.mapper.AccountUiMapperImpl
 import com.edu.core.presentation.ui.mapper.BalanceUiMapper
 import com.edu.core.presentation.ui.mapper.BalanceUiMapperImpl
+import com.edu.core.presentation.ui.mapper.CardSummaryUiMapper
+import com.edu.core.presentation.ui.mapper.CardSummaryUiMapperImpl
+import com.edu.core.presentation.ui.mapper.SyncTimeUiMapper
+import com.edu.core.presentation.ui.mapper.SyncTimeUiMapperImpl
 import com.edu.core.presentation.ui.mapper.TransactionUiMapper
 import com.edu.core.presentation.ui.mapper.TransactionUiMapperImpl
 import org.koin.dsl.module
@@ -24,4 +28,6 @@ val coreUiModule = module {
     factory<AccountUiMapper> { AccountUiMapperImpl(get()) }
     factory<BalanceUiMapper> { BalanceUiMapperImpl(get(), get()) }
     factory<TransactionUiMapper> { TransactionUiMapperImpl(get(), get()) }
+    factory<CardSummaryUiMapper> { CardSummaryUiMapperImpl(get(), get()) }
+    factory<SyncTimeUiMapper> { SyncTimeUiMapperImpl(get()) }
 }

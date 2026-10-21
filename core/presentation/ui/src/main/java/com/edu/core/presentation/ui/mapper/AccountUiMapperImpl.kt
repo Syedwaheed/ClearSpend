@@ -28,6 +28,11 @@ class AccountUiMapperImpl(
             providerLogoUri = domain.provider.logoUri,
             accountTypeBadge = badge,
             accountTypeColorArgb = color.toArgb(),
+            accountTypeIconId = when (domain.accountType) {
+                AccountType.TRANSACTION -> "house"
+                AccountType.SAVINGS, AccountType.BUSINESS_SAVINGS -> "star"
+                AccountType.BUSINESS_TRANSACTION -> "briefcase"
+            },
         )
     }
 

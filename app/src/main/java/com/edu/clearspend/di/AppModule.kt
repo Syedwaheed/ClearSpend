@@ -8,10 +8,44 @@ import com.edu.clearspend.BuildConfig
 import com.edu.clearspend.MainViewModel
 import com.edu.clearspend.splash.SplashUiState
 import com.edu.clearspend.splash.SplashViewModel
+import com.edu.core.data.storage.DataStoreSyncStatusStorage
 import com.edu.core.data.storage.DataStoreUserPreferencesStorage
 import com.edu.core.data.storage.EncryptedDataStoreSecureStorage
+import com.edu.core.domain.repository.AccountRepository
+import com.edu.core.domain.repository.BalanceRepository
+import com.edu.core.domain.repository.CardRepository
+import com.edu.core.domain.repository.DirectDebitRepository
+import com.edu.core.domain.repository.StandingOrderRepository
+import com.edu.core.domain.repository.TransactionRepository
+import com.edu.core.domain.repository.UserInfoRepository
 import com.edu.core.domain.storage.SecureDataStorage
+import com.edu.core.domain.storage.SyncStatusStorage
 import com.edu.core.domain.storage.UserPreferencesStorage
+import com.edu.core.domain.usecase.GetAccountsWithBalancesUseCase
+import com.edu.core.domain.usecase.GetCardSummariesUseCase
+import com.edu.core.domain.usecase.GetCardUtilisationUseCase
+import com.edu.feature.accounts.data.repository.AccountRepositoryImpl
+import com.edu.feature.accounts.data.repository.BalanceRepositoryImpl
+import com.edu.feature.accounts.data.repository.CardRepositoryImpl
+import com.edu.feature.accounts.data.repository.UserInfoRepositoryImpl
+import com.edu.feature.accounts.domain.usecase.GetAccountDetailUseCase
+import com.edu.feature.accounts.domain.usecase.GetAccountsOverviewUseCase
+import com.edu.feature.accounts.domain.usecase.GetBalanceHistoryUseCase
+import com.edu.feature.accounts.domain.usecase.GetConsentDaysRemainingUseCase
+import com.edu.feature.accounts.domain.usecase.GetNetPositionUseCase
+import com.edu.feature.accounts.domain.usecase.GetPrimaryCardUseCase
+import com.edu.feature.dashboard.data.repository.DirectDebitRepositoryImpl
+import com.edu.feature.dashboard.data.repository.StandingOrderRepositoryImpl
+import com.edu.feature.dashboard.domain.usecase.GetDashboardUseCase
+import com.edu.feature.dashboard.domain.usecase.GetGreetingUseCase
+import com.edu.feature.dashboard.domain.usecase.GetMonthlyCashFlowUseCase
+import com.edu.feature.dashboard.domain.usecase.GetPaydayUseCase
+import com.edu.feature.dashboard.domain.usecase.GetPendingSummaryUseCase
+import com.edu.feature.dashboard.domain.usecase.GetRecentTransactionsUseCase
+import com.edu.feature.dashboard.domain.usecase.GetSafeToSpendUseCase
+import com.edu.feature.dashboard.domain.usecase.GetSpendingByCategoryUseCase
+import com.edu.feature.dashboard.domain.usecase.GetUpcomingPaymentsUseCase
+import com.edu.feature.transactions.data.repository.TransactionRepositoryImpl
 import com.edu.core.network.ApiConstants
 import com.edu.core.network.NetworkConfig
 import com.edu.feature.auth.data.TrueLayerAuthConfig
@@ -64,6 +98,7 @@ val appModule = module {
         PreferenceDataStoreFactory.create { androidContext().preferencesDataStoreFile("user_preferences") }
     }
     single<UserPreferencesStorage> { DataStoreUserPreferencesStorage(get(USER_PREFERENCES)) }
+    single<SyncStatusStorage> { DataStoreSyncStatusStorage(dataStore = get(USER_PREFERENCES), clock = get()) }
 
     // --- Repositories --------------------------------------------------------
     single<AuthRepository> {
@@ -81,6 +116,16 @@ val appModule = module {
     }
     single<BankProviderRepository> { StaticBankProviderRepository() }
 
+    // Phase 3 — accounts / cards / info (feature:accounts:data), transactions
+    // (feature:transactions:data), direct debits + standing orders (feature:dashboard:data).
+    single<AccountRepository> { AccountRepositoryImpl(api = get(), accountDao = get(), syncStatus = get()) }
+    single<BalanceRepository> { BalanceRepositoryImpl(api = get(), balanceDao = get(), syncStatus = get(), clock = get()) }
+    single<CardRepository> { CardRepositoryImpl(api = get(), cardDao = get(), cardBalanceDao = get(), syncStatus = get()) }
+    single<UserInfoRepository> { UserInfoRepositoryImpl(api = get(), secureStorage = get(), syncStatus = get()) }
+    single<TransactionRepository> { TransactionRepositoryImpl(api = get(), transactionDao = get(), syncStatus = get(), clock = get()) }
+    single<DirectDebitRepository> { DirectDebitRepositoryImpl(api = get(), directDebitDao = get(), syncStatus = get()) }
+    single<StandingOrderRepository> { StandingOrderRepositoryImpl(api = get(), standingOrderDao = get(), syncStatus = get()) }
+
     // --- Use cases (only those with real logic) -----------------------------
     factory { DetermineStartDestinationUseCase(authRepository = get(), userPreferencesStorage = get()) }
     factory { BuildAuthorizationUrlUseCase(authRepository = get(), isSandbox = BuildConfig.TRUELAYER_SANDBOX) }
@@ -89,6 +134,68 @@ val appModule = module {
     factory { ConnectBankUseCase(authRepository = get(), recordSuccessfulLogin = get()) }
     factory { GetLoginProfileUseCase(authRepository = get(), userPreferencesStorage = get()) }
     factory { SearchBanksUseCase(bankProviderRepository = get()) }
+
+    // Phase 3 — shared (core:domain)
+    factory { GetCardUtilisationUseCase() }
+    factory { GetAccountsWithBalancesUseCase(accountRepository = get(), balanceRepository = get()) }
+    factory { GetCardSummariesUseCase(cardRepository = get(), getCardUtilisation = get()) }
+
+    // Phase 3 — dashboard (feature:dashboard:domain)
+    factory { GetGreetingUseCase(clock = get()) }
+    factory { GetPaydayUseCase(clock = get()) }
+    factory { GetUpcomingPaymentsUseCase(clock = get()) }
+    factory { GetSafeToSpendUseCase(clock = get()) }
+    factory { GetMonthlyCashFlowUseCase(clock = get()) }
+    factory { GetPendingSummaryUseCase() }
+    factory { GetSpendingByCategoryUseCase(clock = get()) }
+    factory { GetRecentTransactionsUseCase() }
+    factory {
+        GetDashboardUseCase(
+            getAccountsWithBalances = get(),
+            getCardSummaries = get(),
+            transactionRepository = get(),
+            directDebitRepository = get(),
+            standingOrderRepository = get(),
+            userInfoRepository = get(),
+            syncStatus = get(),
+            getGreeting = get(),
+            getPayday = get(),
+            getUpcomingPayments = get(),
+            getSafeToSpend = get(),
+            getMonthlyCashFlow = get(),
+            getPendingSummary = get(),
+            getSpendingByCategory = get(),
+            getRecentTransactions = get(),
+            clock = get(),
+        )
+    }
+
+    // Phase 3 — accounts (feature:accounts:domain)
+    factory { GetNetPositionUseCase() }
+    factory { GetBalanceHistoryUseCase(clock = get()) }
+    factory { GetConsentDaysRemainingUseCase(userPreferencesStorage = get(), clock = get()) }
+    factory {
+        GetAccountsOverviewUseCase(
+            getAccountsWithBalances = get(),
+            getCardSummaries = get(),
+            transactionRepository = get(),
+            getNetPosition = get(),
+            getBalanceHistory = get(),
+            getConsentDaysRemaining = get(),
+            syncStatus = get(),
+            clock = get(),
+        )
+    }
+    factory {
+        GetAccountDetailUseCase(
+            accountRepository = get(),
+            balanceRepository = get(),
+            transactionRepository = get(),
+            syncStatus = get(),
+            clock = get(),
+        )
+    }
+    factory { GetPrimaryCardUseCase(getCardSummaries = get(), syncStatus = get()) }
 
     // --- :app screens ---------------------------------------------------------
     factory { SplashUiState() }

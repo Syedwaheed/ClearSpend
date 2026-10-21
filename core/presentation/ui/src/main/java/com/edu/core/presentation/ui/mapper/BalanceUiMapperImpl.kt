@@ -20,5 +20,7 @@ class BalanceUiMapperImpl(
             ?.let(amountFormatter::format),
         hasOverdraft = domain.overdraft > BigDecimal.ZERO,
         formattedUpdateDate = dateFormatter.formatDate(domain.updateTimestamp),
+        formattedOverdraftLimit = amountFormatter.format(domain.overdraft.max(BigDecimal.ZERO)),
+        formattedUpdatedAgo = dateFormatter.formatTimeAgo(domain.updateTimestamp),
     )
 }

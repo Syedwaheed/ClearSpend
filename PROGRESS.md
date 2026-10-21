@@ -76,8 +76,8 @@ Fixed:
 | Phase | Status | Commit(s) | Tests | Notes |
 |---|---|---|---|---|
 | 1 — Foundation | verified | `ca12960` → `a7867bf` → `e926e4f` → `729609b` | 66 tests, 0 failures (`./gradlew build test`, BUILD SUCCESSFUL in 41s) | Built before this orchestration session; re-verified now (build + test rerun, non-negotiable-rules audit rerun, see below). Committed directly to main, not a phase branch. |
-| 2 — Auth + app shell | verified | `68f0184` | 222 tests, 0 failures (`./gradlew clean build test`, BUILD SUCCESSFUL in 2m1s) | feature:auth:domain/data/presentation + :app shell (Koin, Navigation3, deep link, biometric, splash). See Phase 2 section below for full detail. |
-| 3 — Dashboard | in-progress | — | — | — |
+| 2 — Auth + app shell | verified | `68f0184`, fix `4d8a0cd` | 226 tests, 0 failures (`./gradlew clean build test`, BUILD SUCCESSFUL in 1m55s) | feature:auth:domain/data/presentation + :app shell (Koin, Navigation3, deep link, biometric, splash). `4d8a0cd` fixes a core:network bypass the user caught in review — see "Fixes applied after Phase 2" below. |
+| 3 — Dashboard | verified | (pending commit — see below) | 603 tests, 0 failures (`./gradlew clean build test`, BUILD SUCCESSFUL in 2m51s) | Home, Accounts, Account Detail, Card + bottom nav. Pulled forward Phase 4's TransactionRepositoryImpl (Home/Account Detail need it). See Phase 3 section below. |
 | 4 — Transactions | todo | — | — | — |
 | 5 — Send Money | todo | — | — | — |
 | 6 — Analytics | todo | — | — | — |
@@ -180,6 +180,73 @@ JUnit XML across all modules, and a non-negotiable-rules grep audit).
   401→Connect Bank routing is each data screen's job from Phase 3 on;
   sign-out Room-cache clearing is Phase 7; bank-provider list is static
   (fine for sandbox).
+
+## Phase 3 — Dashboard, Accounts, Card, bottom nav
+
+Built by a dispatched subagent (general-purpose, opus), independently
+re-verified in this session.
+
+- **Build/test (reproduced independently):** `BUILD SUCCESSFUL in 2m 51s`;
+  aggregated JUnit XML `tests=603 skipped=0 failures=0 errors=0` (226→603,
+  +377 new).
+- **Audit (reproduced independently):** no `kotlin.Result`, no `.toUi(`,
+  no `Double` for money fields, no `@Ignore`, no `Route` import in any
+  feature module, no hand-built `"https://..."` URLs outside tests, no
+  cross-feature `projects.feature.*` deps, no TODO/FIXME in changed files.
+- **core:network convention (the thing fixed before this phase) held**:
+  read every new `*Api.kt` in feature:accounts/transactions/dashboard:data
+  — every one is a one-line `dataHttpClient.get(route = ...)` through the
+  shared helper; none hand-builds a URL or a status table. The brief's
+  explicit callout of this rule, plus pointing at `TrueLayerUserInfoApi` as
+  the reference pattern, worked.
+- **Manual spot-check:** read `GetDashboardUseCase.kt` in full — correct
+  parallel loading (`async`/`coroutineScope`), accounts failure short-circuits
+  and cancels the rest, a 401 anywhere escalates to UNAUTHORIZED, one
+  aggregated `Dashboard` returned so the ViewModel emits a single result
+  through the sequential MVI queue rather than writing state from multiple
+  coroutines. Confirmed Loading/Error/Empty/Offline composables are used in
+  the Dashboard/Accounts/AccountDetail/Card screens.
+- **Secrets check:** clean, as with Phase 2.
+- **What was built:** feature:accounts:data (Accounts/Cards/Info APIs +
+  mappers + Room-cached repos), feature:transactions:data (pulled forward:
+  TransactionRepositoryImpl), feature:dashboard:data (direct debits/standing
+  orders), feature:accounts:domain (net position, balance history, consent
+  countdown, account detail, primary card), feature:dashboard:domain
+  (greeting, payday, upcoming payments, safe-to-spend, cash flow, pending
+  summary, spending-by-category, `GetDashboardUseCase`), full MVI sets for
+  Home/Accounts/AccountDetail/Card, a redesigned shared composable set
+  (BalanceCard, AccountCard, TransactionRow, floating-pill
+  ClearSpendBottomNav, new OfflineBanner/ProviderLogo/DashedBorder), a new
+  `core:data` offline-cache policy (`NetworkFirst`), and :app wiring
+  (AppModule bindings, nav routes, 401→Connect Bank).
+- **Deviations** (subagent's calls, reviewed and accepted as sensible):
+  TransactionRepositoryImpl pulled forward from Phase 4 (Home/Account Detail
+  need it); direct-debit/standing-order repos live in feature:dashboard:data
+  since Home is their first consumer (Bills in Phase 6 reaches them only via
+  the shared core:domain interfaces — no feature→feature coupling); card
+  utilisation and the two loader use cases moved to **core:domain** (shared
+  by Home and Accounts, which can't depend on each other); payday detection
+  defined as "a credit from the same payer seen ≥2 times with a weekly/
+  fortnightly/monthly gap"; sparkline reconstructed backwards from today's
+  balance when `running_balance` is missing; AER shows "—" (not in the API);
+  `SyncStatusStorage` added as a new interface rather than extending
+  `UserPreferencesStorage` (would have broken 3 Phase-2 test fakes).
+  **One worth tracking, not blocking:** `feature:accounts:data`'s new
+  `InfoApi`/`TrueLayerInfoApi` and `feature:auth:data`'s existing
+  `UserInfoApi`/`TrueLayerUserInfoApi` both independently call
+  `GET /data/v1/info` for different purposes (Home greeting vs. biometric
+  welcome). Not a dependency-rule violation (each feature:data module is
+  self-contained), but worth consolidating in Phase 7 polish if it's easy.
+- **Needs human:** emulator comparison of screens 09/10/11/21 against their
+  PNGs (nothing beyond `@Preview` has been checked visually); run
+  `DashboardScreenTest`/`AccountsScreensTest` on a device; real sandbox
+  credentials to confirm actual direct-debit/standing-order status strings
+  and frequency codes, which were mapped defensively without real responses.
+- **Left undone (by design, later phases):** Transactions/Analytics/Bills/
+  Notifications/Settings/Send screens remain placeholders; no pull-to-refresh
+  gesture on Home (the reload action exists); Room cache isn't cleared on
+  sign-out (Phase 7); `feature/transactions/domain/MyClass.kt` placeholder
+  left for Phase 4.
 
 ## Needs human (cumulative)
 

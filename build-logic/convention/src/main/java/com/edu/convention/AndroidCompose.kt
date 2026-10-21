@@ -29,7 +29,8 @@ internal fun Project.configureAndroidCompose(
         val bom = libs.findLibrary("androidx.compose.bom").get()
         "implementation"(platform(bom))
         "androidTestImplementation"(platform(bom))
-        "debugImplementation"(libs.findLibrary("androidx.compose.ui.tooling.preview").get())
+        // @Preview annotations live in main source sets, so release must see them too.
+        "implementation"(libs.findLibrary("androidx.compose.ui.tooling.preview").get())
     }
 
 }

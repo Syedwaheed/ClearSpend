@@ -20,12 +20,16 @@ import com.edu.clearspend.deeplink.PendingAuthRedirect
 import com.edu.clearspend.placeholder.PlaceholderScreen
 import com.edu.clearspend.splash.SplashScreen
 import com.edu.core.presentation.ui.ClearSpendBottomNav
+import com.edu.feature.accounts.presentation.accounts.AccountsScreen
+import com.edu.feature.accounts.presentation.card.CardScreen
+import com.edu.feature.accounts.presentation.detail.AccountDetailScreen
 import com.edu.feature.auth.presentation.bankselection.BankSelectionScreen
 import com.edu.feature.auth.presentation.biometric.BiometricScreen
 import com.edu.feature.auth.presentation.connectbank.ConnectBankScreen
 import com.edu.feature.auth.presentation.connecting.AuthRedirectParams
 import com.edu.feature.auth.presentation.connecting.ConnectingScreen
 import com.edu.feature.auth.presentation.onboarding.OnboardingScreen
+import com.edu.feature.dashboard.presentation.home.DashboardScreen
 
 /**
  * Navigation3 host. Feature screens expose callbacks; this is the only place
@@ -41,12 +45,33 @@ fun ClearSpendNavHost(
     val activity = LocalActivity.current
     val bottomSheetStrategy = remember { BottomSheetSceneStrategy<NavKey>() }
 
+    // Each bottom-nav tab keeps its own back stack; these survive config changes and process death.
+    val homeHistory = rememberNavBackStack(Route.Dashboard)
+    val accountsHistory = rememberNavBackStack(Route.Accounts)
+    val transactionsHistory = rememberNavBackStack(Route.Transactions)
+    val analyticsHistory = rememberNavBackStack(Route.Analytics)
+    val tabHistories: Map<Route, MutableList<NavKey>> = mapOf(
+        Route.Dashboard to homeHistory,
+        Route.Accounts to accountsHistory,
+        Route.Transactions to transactionsHistory,
+        Route.Analytics to analyticsHistory,
+    )
+
     // A TrueLayer redirect always lands on Connecting (07).
     LaunchedEffect(pendingRedirect) {
         if (pendingRedirect != null && backStack.lastOrNull() != Route.Connecting) {
             backStack.add(Route.Connecting)
         }
     }
+
+    // Consent expired / refresh failed (401): start the auth flow again (DESIGN_SPEC §7).
+    val toConnectBank: () -> Unit = {
+        tabHistories.forEach { (tab, history) -> history.replaceAll(tab) }
+        backStack.replaceAll(Route.ConnectBank)
+    }
+    val openSendSheet: () -> Unit = { if (backStack.lastOrNull() != Route.SendMoney) backStack.add(Route.SendMoney) }
+    val goBack: () -> Unit = { if (backStack.size > 1) backStack.removeAt(backStack.lastIndex) }
+    val switchTab: (Route) -> Unit = { tab -> backStack.switchTab(tab, tabHistories) }
 
     Box(Modifier.fillMaxSize()) {
         NavDisplay(
@@ -82,7 +107,13 @@ fun ClearSpendNavHost(
                     ConnectBankScreen(onNavigateToBankSelection = { backStack.add(Route.BankSelection) })
                 }
                 entry<Route.BankSelection> {
-                    BankSelectionScreen(onNavigateBack = { backStack.popTo(Route.ConnectBank) })
+                    // Reached from Connect Bank (05) or, when already connected, from
+                    // "Connect another bank" / "Renew" on Home and Accounts: back returns there.
+                    BankSelectionScreen(
+                        onNavigateBack = {
+                            if (Route.ConnectBank in backStack) backStack.popTo(Route.ConnectBank) else goBack()
+                        },
+                    )
                 }
                 entry<Route.Connecting> {
                     ConnectingScreen(
@@ -99,14 +130,47 @@ fun ClearSpendNavHost(
                     )
                 }
 
-                // --- Main: placeholders until Phases 3–7 ----------------------------
-                entry<Route.Dashboard> { PlaceholderScreen("Home", "You're connected. The dashboard is built in Phase 3.") }
-                entry<Route.Accounts> { PlaceholderScreen("Accounts", "Built in Phase 3.") }
-                entry<Route.AccountDetail> { PlaceholderScreen("Account", "Built in Phase 3.") }
-                entry<Route.Card> { PlaceholderScreen("Card", "Built in Phase 3.") }
+                // --- Main (Phase 3) -------------------------------------------------
+                entry<Route.Dashboard> {
+                    DashboardScreen(
+                        onNavigateToSettings = { backStack.add(Route.Settings) },
+                        onNavigateToNotifications = { backStack.add(Route.Notifications) },
+                        onNavigateToAccount = { accountId -> backStack.add(Route.AccountDetail(accountId)) },
+                        onNavigateToBankSelection = { backStack.add(Route.BankSelection) },
+                        onOpenSendMoney = openSendSheet,
+                        onNavigateToAnalytics = { switchTab(Route.Analytics) },
+                        onNavigateToTransactions = { switchTab(Route.Transactions) },
+                        onNavigateToBills = { backStack.add(Route.Bills) },
+                        onNavigateToCard = { backStack.add(Route.Card) },
+                        onNavigateToTransaction = { transactionId -> backStack.add(Route.TransactionDetail(transactionId)) },
+                        onNavigateToConnectBank = toConnectBank,
+                    )
+                }
+                entry<Route.Accounts> {
+                    AccountsScreen(
+                        onNavigateToAccount = { accountId -> backStack.add(Route.AccountDetail(accountId)) },
+                        onNavigateToCard = { backStack.add(Route.Card) },
+                        onNavigateToBankSelection = { backStack.add(Route.BankSelection) },
+                        onNavigateToConnectBank = toConnectBank,
+                    )
+                }
+                entry<Route.AccountDetail> { route ->
+                    AccountDetailScreen(
+                        accountId = route.accountId,
+                        onNavigateBack = goBack,
+                        onNavigateToTransaction = { transactionId -> backStack.add(Route.TransactionDetail(transactionId)) },
+                        onNavigateToTransactions = { switchTab(Route.Transactions) },
+                        onNavigateToConnectBank = toConnectBank,
+                    )
+                }
+                entry<Route.Card> {
+                    CardScreen(onNavigateBack = goBack, onNavigateToConnectBank = toConnectBank)
+                }
                 entry<Route.SendMoney>(metadata = BottomSheetSceneStrategy.bottomSheet()) {
                     PlaceholderScreen("Send money", "Built in Phase 5.")
                 }
+
+                // --- Later phases: placeholders --------------------------------------
                 entry<Route.Transactions> { PlaceholderScreen("Transactions", "Built in Phase 4.") }
                 entry<Route.TransactionDetail> { PlaceholderScreen("Transaction", "Built in Phase 4.") }
                 entry<Route.Analytics> { PlaceholderScreen("Analytics", "Built in Phase 6.") }
@@ -121,8 +185,8 @@ fun ClearSpendNavHost(
                 selectedTab = backStack.currentTabIndex(),
                 onTabSelected = { index ->
                     when (val tab = bottomNavTabs[index]) {
-                        Route.SendMoney -> if (backStack.lastOrNull() != Route.SendMoney) backStack.add(Route.SendMoney)
-                        else -> backStack.selectTab(tab)
+                        Route.SendMoney -> openSendSheet()
+                        else -> switchTab(tab)
                     }
                 },
                 modifier = Modifier

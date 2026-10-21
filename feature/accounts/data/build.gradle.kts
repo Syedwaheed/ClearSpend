@@ -5,8 +5,6 @@ plugins {
 
 android {
     namespace = "com.edu.feature.accounts.data"
-
-
 }
 
 dependencies {
@@ -19,4 +17,8 @@ dependencies {
     implementation(projects.core.network)
 
     implementation(projects.feature.accounts.domain)
+
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockk)
+    testImplementation(libs.ktor.client.mock)
 }

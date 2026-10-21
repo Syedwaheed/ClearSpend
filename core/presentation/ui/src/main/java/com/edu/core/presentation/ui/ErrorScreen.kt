@@ -1,60 +1,32 @@
 package com.edu.core.presentation.ui
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ErrorOutline
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.outlined.CloudOff
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import com.edu.core.presentation.designsystem.Blue
-import com.edu.core.presentation.designsystem.Error
-import com.edu.core.presentation.designsystem.Spacing
-import com.edu.core.presentation.designsystem.buttonShape
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import com.edu.core.presentation.designsystem.ClearSpendTheme
 
+/** DESIGN_SPEC §7 Error: same layout as Empty, "Couldn't load your data" + "Try again". */
 @Composable
 fun ErrorScreen(
-    message: String,
     onRetry: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    message: String = stringResource(R.string.state_error_body),
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(Spacing.lg),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Icon(
-            imageVector = Icons.Filled.ErrorOutline,
-            contentDescription = null,
-            tint = Error,
-            modifier = Modifier.height(48.dp)
-        )
-        Spacer(modifier = Modifier.height(Spacing.md))
-        Text(
-            text = message,
-            style = MaterialTheme.typography.bodyMedium,
-            textAlign = TextAlign.Center
-        )
-        Spacer(modifier = Modifier.height(Spacing.lg))
-        Button(
-            onClick = onRetry,
-            shape = buttonShape,
-            colors = ButtonDefaults.buttonColors(containerColor = Blue)
-        ) {
-            Text(text = "Try Again")
-        }
-    }
+    EmptyStateScreen(
+        title = stringResource(R.string.state_error_title),
+        subtitle = message,
+        icon = Icons.Outlined.CloudOff,
+        ctaText = stringResource(R.string.state_error_retry),
+        onCtaClick = onRetry,
+        modifier = modifier,
+    )
+}
+
+@Preview(widthDp = 412, heightDp = 500)
+@Composable
+private fun ErrorScreenPreview() {
+    ClearSpendTheme { ErrorScreen(onRetry = {}) }
 }

@@ -21,6 +21,35 @@ import com.edu.feature.auth.presentation.di.authPresentationModule
 import com.edu.feature.auth.presentation.mapper.BankUiMapper
 import com.edu.feature.auth.presentation.mapper.ConnectionErrorUiMapper
 import com.edu.feature.auth.presentation.mapper.WelcomeUiMapper
+import com.edu.core.database.dao.AccountDao
+import com.edu.core.database.dao.BalanceDao
+import com.edu.core.database.dao.CardBalanceDao
+import com.edu.core.database.dao.CardDao
+import com.edu.core.database.dao.DirectDebitDao
+import com.edu.core.database.dao.StandingOrderDao
+import com.edu.core.database.dao.TransactionDao
+import com.edu.core.domain.repository.AccountRepository
+import com.edu.core.domain.repository.BalanceRepository
+import com.edu.core.domain.repository.CardRepository
+import com.edu.core.domain.repository.DirectDebitRepository
+import com.edu.core.domain.repository.StandingOrderRepository
+import com.edu.core.domain.repository.TransactionRepository
+import com.edu.core.domain.repository.UserInfoRepository
+import com.edu.core.domain.storage.SyncStatusStorage
+import com.edu.feature.accounts.data.di.accountsDataModule
+import com.edu.feature.accounts.domain.usecase.GetAccountDetailUseCase
+import com.edu.feature.accounts.domain.usecase.GetAccountsOverviewUseCase
+import com.edu.feature.accounts.domain.usecase.GetPrimaryCardUseCase
+import com.edu.feature.accounts.presentation.accounts.AccountsUiState
+import com.edu.feature.accounts.presentation.di.accountsPresentationModule
+import com.edu.feature.accounts.presentation.mapper.AccountDetailUiMapper
+import com.edu.feature.accounts.presentation.mapper.AccountsContentUiMapper
+import com.edu.feature.dashboard.data.di.dashboardDataModule
+import com.edu.feature.dashboard.domain.usecase.GetDashboardUseCase
+import com.edu.feature.dashboard.presentation.di.dashboardPresentationModule
+import com.edu.feature.dashboard.presentation.home.DashboardUiState
+import com.edu.feature.dashboard.presentation.mapper.DashboardContentUiMapper
+import com.edu.feature.transactions.data.di.transactionsDataModule
 import io.mockk.mockk
 import org.junit.After
 import org.junit.Assert.assertNotNull
@@ -71,5 +100,54 @@ class KoinGraphTest {
         assertNotNull(koin.get<WelcomeUiMapper>())
         assertNotNull(koin.get<BiometricAvailabilityChecker>())
         assertNotNull(koin.get<ConnectBankUiState>())
+    }
+
+    @Test
+    fun `Should resolve the dashboard and accounts graph`() {
+        val koin = startKoin {
+            allowOverride(true)
+            androidContext(mockk<Context>(relaxed = true))
+            modules(
+                appModule,
+                networkModule,
+                coreUiModule,
+                authDataModule,
+                accountsDataModule,
+                transactionsDataModule,
+                dashboardDataModule,
+                dashboardPresentationModule,
+                accountsPresentationModule,
+                module {
+                    single<SecureDataStorage> { mockk(relaxed = true) }
+                    single<UserPreferencesStorage> { mockk(relaxed = true) }
+                    single<SyncStatusStorage> { mockk(relaxed = true) }
+                    // Room needs a device; the DAOs are mocked (databaseModule is covered on device).
+                    single<AccountDao> { mockk(relaxed = true) }
+                    single<BalanceDao> { mockk(relaxed = true) }
+                    single<CardDao> { mockk(relaxed = true) }
+                    single<CardBalanceDao> { mockk(relaxed = true) }
+                    single<TransactionDao> { mockk(relaxed = true) }
+                    single<DirectDebitDao> { mockk(relaxed = true) }
+                    single<StandingOrderDao> { mockk(relaxed = true) }
+                },
+            )
+        }.koin
+
+        assertNotNull(koin.get<AccountRepository>())
+        assertNotNull(koin.get<BalanceRepository>())
+        assertNotNull(koin.get<CardRepository>())
+        assertNotNull(koin.get<UserInfoRepository>())
+        assertNotNull(koin.get<TransactionRepository>())
+        assertNotNull(koin.get<DirectDebitRepository>())
+        assertNotNull(koin.get<StandingOrderRepository>())
+        assertNotNull(koin.get<GetDashboardUseCase>())
+        assertNotNull(koin.get<GetAccountsOverviewUseCase>())
+        assertNotNull(koin.get<GetAccountDetailUseCase>())
+        assertNotNull(koin.get<GetPrimaryCardUseCase>())
+        assertNotNull(koin.get<DashboardContentUiMapper>())
+        assertNotNull(koin.get<AccountsContentUiMapper>())
+        assertNotNull(koin.get<AccountDetailUiMapper>())
+        assertNotNull(koin.get<DashboardUiState>())
+        assertNotNull(koin.get<AccountsUiState>())
     }
 }

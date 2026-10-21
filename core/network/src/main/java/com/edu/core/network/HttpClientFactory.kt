@@ -15,11 +15,17 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import timber.log.Timber
 
+/**
+ * Authenticated Data API client. [engine] defaults to CIO; tests pass a
+ * Ktor `MockEngine` so repositories can be exercised end-to-end through the
+ * shared [com.edu.core.network.ktorclient.safeCall] mapping.
+ */
 fun buildHttpClient(
     baseUrl: String,
     tokenProvider: TokenProvider,
+    engine: HttpClientEngine = CIO.create(),
 ): HttpClient {
-    val client = HttpClient(CIO) {
+    val client = HttpClient(engine) {
         install(ContentNegotiation) {
             json(
                 Json {

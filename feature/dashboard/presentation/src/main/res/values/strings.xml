@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home_greeting_morning">Good morning</string>
+    <string name="home_greeting_afternoon">Good afternoon</string>
+    <string name="home_greeting_evening">Good evening</string>
+    <string name="home_greeting_with_name">%1$s, %2$s</string>
+    <string name="home_avatar_description">Profile and settings</string>
+    <string name="home_notifications_description">Notifications</string>
+    <string name="home_balance_unavailable">Balance unavailable</string>
+
+    <string name="home_connect_another_bank">Connect another bank</string>
+
+    <string name="home_action_send">Send</string>
+    <string name="home_action_request">Request</string>
+    <string name="home_action_analytics">Analytics</string>
+    <string name="home_action_statements">Statements</string>
+    <string name="home_coming_soon">Coming soon</string>
+
+    <string name="home_safe_to_spend_title">Safe to spend until payday</string>
+    <string name="home_safe_to_spend_month_title">Safe to spend this month</string>
+    <plurals name="home_days_left">
+        <item quantity="one">%d day left</item>
+        <item quantity="other">%d days left</item>
+    </plurals>
+    <string name="home_payday_today">Payday today</string>
+    <string name="home_bills_due">Bills due %1$s</string>
+    <string name="home_spent">Spent %1$s</string>
+    <string name="home_yours">Yours %1$s</string>
+
+    <string name="home_money_in">MONEY IN</string>
+    <string name="home_money_out">MONEY OUT</string>
+    <string name="home_so_far">%1$s so far</string>
+    <string name="home_vs_month_down">↓ %1$d%% vs %2$s</string>
+    <string name="home_vs_month_up">↑ %1$d%% vs %2$s</string>
+    <string name="home_vs_month_none">No spending last month</string>
+
+    <plurals name="home_pending_title">
+        <item quantity="one">%d pending transaction</item>
+        <item quantity="other">%d pending transactions</item>
+    </plurals>
+    <string name="home_pending_subtitle">%1$s not yet settled</string>
+
+    <string name="home_upcoming_title">Upcoming Payments</string>
+    <string name="home_see_all">See all</string>
+    <string name="home_details">Details</string>
+    <string name="home_upcoming_empty">No direct debits or standing orders due</string>
+    <string name="home_direct_debit">Direct Debit</string>
+    <string name="home_standing_order">Standing Order</string>
+    <string name="home_due_today">Today</string>
+    <string name="home_due_tomorrow">Tomorrow</string>
+    <plurals name="home_due_in_days">
+        <item quantity="one">in %d day</item>
+        <item quantity="other">in %d days</item>
+    </plurals>
+
+    <string name="home_categories_title">Where your money went</string>
+    <string name="home_categories_empty">No spending yet this month</string>
+
+    <string name="home_card_of_limit">of %1$s</string>
+    <string name="home_card_payment_due">Payment of %1$s due %2$s</string>
+
+    <string name="home_recent_title">Recent Transactions</string>
+    <string name="home_recent_empty">No transactions in the last 90 days</string>
+
+    <string name="home_empty_title">No accounts yet</string>
+    <string name="home_empty_body">Connect a bank to see your balances here.</string>
+    <string name="home_empty_cta">Connect a bank</string>
+</resources>

@@ -50,6 +50,42 @@ class TransactionUiMapperImplTest {
         assertEquals("£1,200.00", result.formattedRunningBalance)
         assertFalse(result.isPending)
         assertEquals("shopping_cart", result.categoryIconId)
+        assertEquals("T", result.initial)
+        assertEquals("Shopping · Today", result.compactSubtitle)
+    }
+
+    @Test
+    fun `map falls back to the category label When there is no classification`() {
+        val transaction = Transaction(
+            transactionId = "tx-4",
+            accountId = "acc-1",
+            timestamp = Instant.parse("2026-05-28T09:00:00Z"),
+            description = "CASH WITHDRAWAL",
+            amount = BigDecimal("-20.00"),
+            transactionType = TransactionType.DEBIT,
+            transactionCategory = TransactionCategory.CASH,
+        )
+
+        assertEquals("Cash · 28 May", mapper.map(transaction).compactSubtitle)
+    }
+
+    @Test
+    fun `map uses the description When the merchant name is blank`() {
+        val transaction = Transaction(
+            transactionId = "tx-5",
+            accountId = "acc-1",
+            timestamp = Instant.parse("2026-09-15T09:00:00Z"),
+            description = "Account Overdraft Fee",
+            merchantName = " ",
+            amount = BigDecimal("-0.01"),
+            transactionType = TransactionType.DEBIT,
+            transactionCategory = TransactionCategory.BILL_PAYMENT,
+        )
+
+        val result = mapper.map(transaction)
+
+        assertEquals("Account Overdraft Fee", result.title)
+        assertEquals("Yesterday", result.relativeDay)
     }
 
     @Test

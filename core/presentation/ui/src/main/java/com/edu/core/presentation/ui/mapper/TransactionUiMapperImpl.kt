@@ -29,10 +29,12 @@ class TransactionUiMapperImpl(
         val time = dateFormatter.formatTime(domain.timestamp)
         val subtitle = listOfNotNull(classificationLabel, time, method.short).joinToString(" · ")
         val isDebit = domain.transactionType == TransactionType.DEBIT
+        val title = domain.merchantName?.takeIf { it.isNotBlank() } ?: domain.description
+        val relativeDay = dateFormatter.formatRelativeDay(domain.timestamp)
 
         return TransactionUi(
             transactionId = domain.transactionId,
-            title = domain.merchantName ?: domain.description,
+            title = title,
             subtitle = subtitle,
             formattedAmount = amountFormatter.formatSigned(domain.amount),
             amountColorArgb = (if (isDebit) ErrorOnWhite else SuccessOnWhite).toArgb(),
@@ -42,6 +44,9 @@ class TransactionUiMapperImpl(
             categoryColorArgb = colorFor(domain.transactionCategory).toArgb(),
             formattedRunningBalance = domain.runningBalance?.let(amountFormatter::format),
             isPending = domain.isPending,
+            initial = title.firstOrNull { it.isLetterOrDigit() }?.uppercase() ?: "•",
+            compactSubtitle = "${domain.classification.firstOrNull() ?: categoryLabelFor(domain.transactionCategory)} · $relativeDay",
+            relativeDay = relativeDay,
         )
     }
 
@@ -55,6 +60,17 @@ class TransactionUiMapperImpl(
         TransactionCategory.CASH, TransactionCategory.ATM -> PaymentMethod("Cash / ATM withdrawal", "Cash / ATM")
         TransactionCategory.CREDIT -> PaymentMethod("Bank credit (BACS)", "BACS")
         TransactionCategory.OTHER -> PaymentMethod("Bank transaction", "Bank")
+    }
+
+    private fun categoryLabelFor(category: TransactionCategory): String = when (category) {
+        TransactionCategory.PURCHASE -> "Shopping"
+        TransactionCategory.TRANSFER -> "Transfer"
+        TransactionCategory.DIRECT_DEBIT -> "Direct Debit"
+        TransactionCategory.BILL_PAYMENT -> "Bill Payment"
+        TransactionCategory.CASH -> "Cash"
+        TransactionCategory.ATM -> "ATM"
+        TransactionCategory.CREDIT -> "Income"
+        TransactionCategory.OTHER -> "Other"
     }
 
     private fun colorFor(category: TransactionCategory): Color = when (category) {
