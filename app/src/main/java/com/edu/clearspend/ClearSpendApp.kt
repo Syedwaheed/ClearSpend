@@ -12,6 +12,7 @@ import com.edu.feature.auth.presentation.di.authPresentationModule
 import com.edu.feature.dashboard.data.di.dashboardDataModule
 import com.edu.feature.dashboard.presentation.di.dashboardPresentationModule
 import com.edu.feature.transactions.data.di.transactionsDataModule
+import com.edu.feature.transactions.presentation.di.transactionsPresentationModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 import timber.log.Timber
@@ -34,6 +35,7 @@ class ClearSpendApp : Application() {
                 dashboardDataModule,
                 dashboardPresentationModule,
                 accountsPresentationModule,
+                transactionsPresentationModule,
             )
         }
     }

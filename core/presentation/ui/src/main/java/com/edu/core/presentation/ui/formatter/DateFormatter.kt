@@ -26,6 +26,18 @@ interface DateFormatter {
     /** Three-letter month, e.g. "Aug". */
     fun formatMonthShort(month: YearMonth): String
 
+    /**
+     * Transactions (12) date-group header: "Today — 1 June 2026",
+     * "Yesterday — 31 May 2026", otherwise "Thursday — 28 May 2026".
+     */
+    fun formatDayHeader(date: LocalDate): String
+
+    /** Month and year, e.g. "June 2026" (Transactions summary card). */
+    fun formatMonthYear(month: YearMonth): String
+
+    /** Inclusive range, e.g. "21 May – 1 Jun 2026"; both years shown when they differ. */
+    fun formatDateRange(from: LocalDate, to: LocalDate): String
+
     /** "14:32" when [instant] is today, otherwise "16 Sep 2026, 14:32" (offline banner). */
     fun formatSyncTime(instant: Instant): String
 }

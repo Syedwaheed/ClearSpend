@@ -31,7 +31,7 @@ import com.edu.core.database.entity.TransactionEntity
         StandingOrderEntity::class,
         SavedPayeeEntity::class,
     ],
-    version = 1,
+    version = 2, // 2: transactions.providerReference (cache only; destructive fallback)
     exportSchema = true,
 )
 @TypeConverters(Converters::class)

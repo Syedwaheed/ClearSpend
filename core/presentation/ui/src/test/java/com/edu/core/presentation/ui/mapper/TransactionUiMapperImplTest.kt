@@ -3,6 +3,9 @@ package com.edu.core.presentation.ui.mapper
 import com.edu.core.domain.model.Transaction
 import com.edu.core.domain.model.TransactionCategory
 import com.edu.core.domain.model.TransactionType
+import androidx.compose.ui.graphics.toArgb
+import com.edu.core.presentation.designsystem.ErrorOnWhite
+import com.edu.core.presentation.designsystem.SuccessOnWhite
 import com.edu.core.presentation.ui.formatter.AmountFormatterImpl
 import com.edu.core.presentation.ui.formatter.DateFormatterImpl
 import org.junit.Assert.assertEquals
@@ -127,5 +130,79 @@ class TransactionUiMapperImplTest {
         )
 
         assertTrue(mapper.map(transaction).isPending)
+    }
+
+    private fun transaction(
+        amount: String = "-46.82",
+        type: TransactionType = TransactionType.DEBIT,
+        category: TransactionCategory = TransactionCategory.PURCHASE,
+        runningBalance: BigDecimal? = BigDecimal("44.01"),
+        pending: Boolean = false,
+    ) = Transaction(
+        transactionId = "tx",
+        accountId = "acc-1",
+        timestamp = Instant.parse("2026-09-16T14:32:00Z"),
+        description = "TALKTALK",
+        merchantName = "TalkTalk Telecom",
+        amount = BigDecimal(amount),
+        transactionType = type,
+        transactionCategory = category,
+        classification = listOf("Bills and Utilities", "Internet"),
+        runningBalance = runningBalance,
+        isPending = pending,
+    )
+
+    @Test
+    fun `map keeps the minus sign on a negative amount`() {
+        assertEquals("-£46.82", mapper.map(transaction()).formattedAmount)
+    }
+
+    @Test
+    fun `map colours a debit red`() {
+        assertEquals(ErrorOnWhite.toArgb(), mapper.map(transaction()).amountColorArgb)
+    }
+
+    @Test
+    fun `map adds a plus sign to a credit`() {
+        assertEquals("+£420.00", mapper.map(transaction("420.00", TransactionType.CREDIT, TransactionCategory.CREDIT)).formattedAmount)
+    }
+
+    @Test
+    fun `map colours a credit green`() {
+        val credit = transaction("420.00", TransactionType.CREDIT, TransactionCategory.CREDIT)
+
+        assertEquals(SuccessOnWhite.toArgb(), mapper.map(credit).amountColorArgb)
+    }
+
+    @Test
+    fun `map hides the running balance When it is null`() {
+        assertNull(mapper.map(transaction(runningBalance = null)).formattedRunningBalance)
+    }
+
+    @Test
+    fun `map formats a negative running balance`() {
+        assertEquals("-£62.17", mapper.map(transaction(runningBalance = BigDecimal("-62.17"))).formattedRunningBalance)
+    }
+
+    @Test
+    fun `map drops the time from a pending row subtitle`() {
+        assertEquals("Internet · Card", mapper.map(transaction(pending = true)).subtitle)
+    }
+
+    @Test
+    fun `map gives the long payment method label`() {
+        assertEquals("Direct Debit", mapper.map(transaction(category = TransactionCategory.DIRECT_DEBIT)).paymentMethod)
+    }
+
+    @Test
+    fun `map labels a credit as BACS`() {
+        val credit = transaction("420.00", TransactionType.CREDIT, TransactionCategory.CREDIT)
+
+        assertEquals("Bank credit (BACS)", mapper.map(credit).paymentMethod)
+    }
+
+    @Test
+    fun `map gives the category label`() {
+        assertEquals("Shopping", mapper.map(transaction()).categoryLabel)
     }
 }

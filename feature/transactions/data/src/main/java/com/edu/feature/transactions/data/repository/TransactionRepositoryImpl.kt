@@ -10,6 +10,7 @@ import com.edu.core.domain.util.Result
 import com.edu.core.domain.util.map
 import com.edu.feature.transactions.data.mapper.TransactionMapper
 import com.edu.feature.transactions.data.remote.TransactionsApi
+import kotlinx.coroutines.CancellationException
 import java.time.Clock
 import java.time.LocalDate
 
@@ -62,4 +63,17 @@ class TransactionRepositoryImpl(
             saveToCache = { transactions -> transactionDao.replacePending(accountId, transactions.map(mapper::toEntity)) },
             readCache = { transactionDao.getPendingTransactions(accountId).map(mapper::fromEntity) },
         )
+
+    override suspend fun getTransaction(transactionId: String): Result<Transaction, DataError> {
+        val entity = try {
+            transactionDao.getTransaction(transactionId)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            // Exceptions never cross data → domain; a broken cache read is "not available".
+            return Result.Error(DataError.NetworkError.UNKNOWN)
+        }
+        return entity?.let { Result.Success(mapper.fromEntity(it)) }
+            ?: Result.Error(DataError.NetworkError.NOT_FOUND)
+    }
 }

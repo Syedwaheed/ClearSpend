@@ -31,6 +31,7 @@ class TransactionMapper {
             classification = dto.transactionClassification.filter { it.isNotBlank() },
             runningBalance = dto.runningBalance?.amount,
             isPending = isPending,
+            providerReference = dto.meta?.providerReference?.trim()?.takeIf { it.isNotEmpty() },
         )
     }
 
@@ -47,6 +48,7 @@ class TransactionMapper {
         classification = domain.classification,
         runningBalance = domain.runningBalance?.toPlainString(),
         isPending = domain.isPending,
+        providerReference = domain.providerReference,
     )
 
     fun fromEntity(entity: TransactionEntity): Transaction {
@@ -64,6 +66,7 @@ class TransactionMapper {
             classification = entity.classification,
             runningBalance = entity.runningBalance?.let(::BigDecimal),
             isPending = entity.isPending,
+            providerReference = entity.providerReference,
         )
     }
 

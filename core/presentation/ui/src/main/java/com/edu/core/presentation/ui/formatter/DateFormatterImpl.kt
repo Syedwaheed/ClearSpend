@@ -21,6 +21,9 @@ class DateFormatterImpl(
 
     private val timeFormatter = DateTimeFormatter.ofPattern("HH:mm", locale)
     private val longDateFormatter = DateTimeFormatter.ofPattern("EEEE, d MMMM yyyy", locale)
+    private val fullDateFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy", locale)
+    private val weekdayFormatter = DateTimeFormatter.ofPattern("EEEE", locale)
+    private val monthYearFormatter = DateTimeFormatter.ofPattern("MMMM yyyy", locale)
 
     private fun today(): LocalDate = LocalDate.now(clock)
 
@@ -58,6 +61,27 @@ class DateFormatterImpl(
     }
 
     override fun formatMonthShort(month: YearMonth): String = MONTH_ABBREVIATIONS[month.monthValue - 1]
+
+    override fun formatDayHeader(date: LocalDate): String {
+        val today = today()
+        val day = when (date) {
+            today -> "Today"
+            today.minusDays(1) -> "Yesterday"
+            else -> weekdayFormatter.format(date)
+        }
+        return "$day — ${fullDateFormatter.format(date)}"
+    }
+
+    override fun formatMonthYear(month: YearMonth): String = monthYearFormatter.format(month)
+
+    override fun formatDateRange(from: LocalDate, to: LocalDate): String {
+        val start = "${from.dayOfMonth} ${MONTH_ABBREVIATIONS[from.monthValue - 1]}"
+        return when {
+            from == to -> formatDate(to)
+            from.year == to.year -> "$start – ${formatDate(to)}"
+            else -> "${formatDate(from)} – ${formatDate(to)}"
+        }
+    }
 
     override fun formatSyncTime(instant: Instant): String =
         if (instant.localDate() == today()) formatTime(instant) else "${formatDate(instant)}, ${formatTime(instant)}"

@@ -46,6 +46,15 @@ import com.edu.feature.dashboard.domain.usecase.GetSafeToSpendUseCase
 import com.edu.feature.dashboard.domain.usecase.GetSpendingByCategoryUseCase
 import com.edu.feature.dashboard.domain.usecase.GetUpcomingPaymentsUseCase
 import com.edu.feature.transactions.data.repository.TransactionRepositoryImpl
+import com.edu.feature.transactions.domain.usecase.GetFilteredTransactionsUseCase
+import com.edu.feature.transactions.domain.usecase.GetMerchantInsightUseCase
+import com.edu.feature.transactions.domain.usecase.GetPageWindowUseCase
+import com.edu.feature.transactions.domain.usecase.GetPeriodBoundsUseCase
+import com.edu.feature.transactions.domain.usecase.GetTransactionDayGroupsUseCase
+import com.edu.feature.transactions.domain.usecase.GetTransactionDetailUseCase
+import com.edu.feature.transactions.domain.usecase.GetTransactionsOverviewUseCase
+import com.edu.feature.transactions.domain.usecase.GetTransactionsPageUseCase
+import com.edu.feature.transactions.domain.usecase.GetTransactionsSummaryUseCase
 import com.edu.core.network.ApiConstants
 import com.edu.core.network.NetworkConfig
 import com.edu.feature.auth.data.TrueLayerAuthConfig
@@ -196,6 +205,33 @@ val appModule = module {
         )
     }
     factory { GetPrimaryCardUseCase(getCardSummaries = get(), syncStatus = get()) }
+
+    // Phase 4 — transactions (feature:transactions:domain)
+    factory { GetPeriodBoundsUseCase(clock = get()) }
+    factory { GetPageWindowUseCase() }
+    factory { GetFilteredTransactionsUseCase() }
+    factory { GetTransactionDayGroupsUseCase(clock = get()) }
+    factory { GetTransactionsSummaryUseCase() }
+    factory {
+        GetTransactionsOverviewUseCase(
+            getPeriodBounds = get(),
+            getFilteredTransactions = get(),
+            getDayGroups = get(),
+            getSummary = get(),
+            clock = get(),
+        )
+    }
+    factory { GetTransactionsPageUseCase(accountRepository = get(), transactionRepository = get(), syncStatus = get()) }
+    factory { GetMerchantInsightUseCase(clock = get()) }
+    factory {
+        GetTransactionDetailUseCase(
+            transactionRepository = get(),
+            accountRepository = get(),
+            getMerchantInsight = get(),
+            syncStatus = get(),
+            clock = get(),
+        )
+    }
 
     // --- :app screens ---------------------------------------------------------
     factory { SplashUiState() }

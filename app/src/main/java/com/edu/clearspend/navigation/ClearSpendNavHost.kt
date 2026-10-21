@@ -30,6 +30,8 @@ import com.edu.feature.auth.presentation.connecting.AuthRedirectParams
 import com.edu.feature.auth.presentation.connecting.ConnectingScreen
 import com.edu.feature.auth.presentation.onboarding.OnboardingScreen
 import com.edu.feature.dashboard.presentation.home.DashboardScreen
+import com.edu.feature.transactions.presentation.detail.TransactionDetailScreen
+import com.edu.feature.transactions.presentation.list.TransactionsScreen
 
 /**
  * Navigation3 host. Feature screens expose callbacks; this is the only place
@@ -170,9 +172,23 @@ fun ClearSpendNavHost(
                     PlaceholderScreen("Send money", "Built in Phase 5.")
                 }
 
+                // --- Transactions (Phase 4) -------------------------------------------
+                entry<Route.Transactions> {
+                    TransactionsScreen(
+                        onNavigateToTransaction = { transactionId -> backStack.add(Route.TransactionDetail(transactionId)) },
+                        onNavigateToConnectBank = toConnectBank,
+                    )
+                }
+                entry<Route.TransactionDetail> { route ->
+                    TransactionDetailScreen(
+                        transactionId = route.transactionId,
+                        onNavigateBack = goBack,
+                        onNavigateToBills = { backStack.add(Route.Bills) },
+                        onNavigateToConnectBank = toConnectBank,
+                    )
+                }
+
                 // --- Later phases: placeholders --------------------------------------
-                entry<Route.Transactions> { PlaceholderScreen("Transactions", "Built in Phase 4.") }
-                entry<Route.TransactionDetail> { PlaceholderScreen("Transaction", "Built in Phase 4.") }
                 entry<Route.Analytics> { PlaceholderScreen("Analytics", "Built in Phase 6.") }
                 entry<Route.Bills> { PlaceholderScreen("Bills & subscriptions", "Built in Phase 6.") }
                 entry<Route.Notifications> { PlaceholderScreen("Notifications", "Built in Phase 7.") }

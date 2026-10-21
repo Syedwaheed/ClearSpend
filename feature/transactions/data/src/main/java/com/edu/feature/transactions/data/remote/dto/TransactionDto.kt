@@ -11,6 +11,12 @@ data class RunningBalanceDto(
     @SerialName("currency") val currency: String? = null,
 )
 
+/** `meta` object; only the field the app shows is read. */
+@Serializable
+data class TransactionMetaDto(
+    @SerialName("provider_reference") val providerReference: String? = null,
+)
+
 /**
  * One entry of `GET /data/v1/accounts/{id}/transactions[/pending]` → `results[]`.
  * `amount` is NEGATIVE for debits in the TrueLayer API.
@@ -27,4 +33,5 @@ data class TransactionDto(
     @SerialName("transaction_classification") val transactionClassification: List<String> = emptyList(),
     @SerialName("merchant_name") val merchantName: String? = null,
     @SerialName("running_balance") val runningBalance: RunningBalanceDto? = null,
+    @SerialName("meta") val meta: TransactionMetaDto? = null,
 )

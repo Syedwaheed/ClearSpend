@@ -104,3 +104,50 @@ class DateFormatterImplRelativeTest {
         assertEquals("15 Sep 2026, 09:05", formatter.formatSyncTime(Instant.parse("2026-09-15T09:05:00Z")))
     }
 }
+
+class DateFormatterImplTransactionsTest {
+
+    // Wednesday 16 September 2026
+    private val formatter = DateFormatterImpl(Locale.UK, Clock.fixed(Instant.parse("2026-09-16T14:32:00Z"), ZoneOffset.UTC))
+
+    @Test
+    fun `formatDayHeader says Today with the full date`() {
+        assertEquals("Today — 16 September 2026", formatter.formatDayHeader(java.time.LocalDate.of(2026, 9, 16)))
+    }
+
+    @Test
+    fun `formatDayHeader says Yesterday with the full date`() {
+        assertEquals("Yesterday — 15 September 2026", formatter.formatDayHeader(java.time.LocalDate.of(2026, 9, 15)))
+    }
+
+    @Test
+    fun `formatDayHeader names the weekday for older days`() {
+        assertEquals("Thursday — 10 September 2026", formatter.formatDayHeader(java.time.LocalDate.of(2026, 9, 10)))
+    }
+
+    @Test
+    fun `formatMonthYear spells the month out`() {
+        assertEquals("June 2026", formatter.formatMonthYear(java.time.YearMonth.of(2026, 6)))
+    }
+
+    @Test
+    fun `formatDateRange shows the year once within a year`() {
+        assertEquals(
+            "21 May – 1 Jun 2026",
+            formatter.formatDateRange(java.time.LocalDate.of(2026, 5, 21), java.time.LocalDate.of(2026, 6, 1)),
+        )
+    }
+
+    @Test
+    fun `formatDateRange shows both years across a year boundary`() {
+        assertEquals(
+            "28 Dec 2025 – 3 Jan 2026",
+            formatter.formatDateRange(java.time.LocalDate.of(2025, 12, 28), java.time.LocalDate.of(2026, 1, 3)),
+        )
+    }
+
+    @Test
+    fun `formatDateRange shows a single day once`() {
+        assertEquals("1 Jun 2026", formatter.formatDateRange(java.time.LocalDate.of(2026, 6, 1), java.time.LocalDate.of(2026, 6, 1)))
+    }
+}

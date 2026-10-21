@@ -120,6 +120,34 @@ class TransactionRepositoryImplTest {
     }
 
     @Test
+    fun `Should load a single transaction from the cache`() = runTest {
+        coEvery { dao.getTransaction("p-1") } returns
+            TransactionEntity("p-1", "acc-1", 0L, "COSTA", "Costa Coffee", "-4.65", "GBP", "DEBIT", "PURCHASE", emptyList(), null, true)
+
+        val result = repository { json("{}") }.getTransaction("p-1") as Result.Success
+
+        assertEquals(true, result.data.isPending)
+    }
+
+    @Test
+    fun `Should return not found When the transaction is not cached`() = runTest {
+        coEvery { dao.getTransaction("missing") } returns null
+
+        val result = repository { json("{}") }.getTransaction("missing")
+
+        assertEquals(Result.Error(DataError.NetworkError.NOT_FOUND), result)
+    }
+
+    @Test
+    fun `Should not throw When the cache read fails`() = runTest {
+        coEvery { dao.getTransaction("x") } throws IllegalStateException("db closed")
+
+        val result = repository { json("{}") }.getTransaction("x")
+
+        assertEquals(Result.Error(DataError.NetworkError.UNKNOWN), result)
+    }
+
+    @Test
     fun `Should return unauthorized When consent expired`() = runTest {
         val result = repository { json("{}", HttpStatusCode.Unauthorized) }.getPendingTransactions("acc-1")
 

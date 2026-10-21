@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 12 / 13 Transactions -->
+    <string name="transactions_title">Transactions</string>
+    <string name="transactions_all_accounts">All accounts</string>
+    <string name="transactions_all_accounts_symbol">Σ</string>
+    <string name="transactions_switch_account">Choose account</string>
+    <string name="transactions_all_time">All time</string>
+    <plurals name="transactions_count">
+        <item quantity="one">%d transaction</item>
+        <item quantity="other">%d transactions</item>
+    </plurals>
+    <string name="transactions_money_in">MONEY IN</string>
+    <string name="transactions_money_out">MONEY OUT</string>
+    <string name="transactions_net">NET</string>
+    <string name="transactions_daily_spending">Daily spending</string>
+    <string name="transactions_search_hint">Search merchants or references</string>
+    <string name="transactions_clear_search">Clear search</string>
+    <string name="transactions_period_all">All</string>
+    <string name="transactions_period_this_month">This Month</string>
+    <string name="transactions_period_last_month">Last Month</string>
+    <string name="transactions_period_custom">Custom Range</string>
+    <string name="transactions_category_all">All</string>
+    <string name="transactions_category_purchase">Shopping</string>
+    <string name="transactions_category_direct_debit">Direct Debit</string>
+    <string name="transactions_category_bill_payment">Bills</string>
+    <string name="transactions_category_transfer">Transfer</string>
+    <string name="transactions_category_cash">Cash</string>
+    <string name="transactions_category_credit">Income</string>
+    <string name="transactions_pending">PENDING</string>
+    <string name="transactions_not_settled">Not settled</string>
+    <string name="transactions_empty_title">No transactions found</string>
+    <string name="transactions_empty_filtered_hint">Try a different search, period or category.</string>
+    <string name="transactions_empty_hint">Nothing has been paid in or out of this account in this period.</string>
+    <string name="transactions_clear_filters">Clear filters</string>
+    <string name="transactions_refresh">Refresh</string>
+    <string name="transactions_load_more_failed">Couldn\'t load older transactions</string>
+    <string name="transactions_try_again">Try again</string>
+    <string name="transactions_date_range_confirm">Apply</string>
+    <string name="transactions_date_range_cancel">Cancel</string>
+
+    <!-- 14-16 Transaction detail -->
+    <string name="detail_back">Back</string>
+    <string name="detail_settled">Settled</string>
+    <string name="detail_pending">Pending</string>
+    <string name="detail_account">Account</string>
+    <string name="detail_payment_method">Payment method</string>
+    <string name="detail_reference">Reference</string>
+    <string name="detail_balance_after">Balance after</string>
+    <string name="detail_value_missing">—</string>
+    <string name="detail_insight_first_time_title">First time at %1$s</string>
+    <plurals name="detail_insight_first_time_body">
+        <item quantity="one">No earlier payments in the last %d day</item>
+        <item quantity="other">No earlier payments in the last %d days</item>
+    </plurals>
+    <string name="detail_insight_monthly_title">%1$s at %2$s this month</string>
+    <plurals name="detail_insight_monthly_count">
+        <item quantity="one">%d payment</item>
+        <item quantity="other">%d payments</item>
+    </plurals>
+    <string name="detail_insight_top_merchant">%1$s · one of your top merchants</string>
+    <string name="detail_manage_in_bills">Recurring Direct Debit · manage in Bills</string>
+    <string name="detail_transaction_id">TRANSACTION ID</string>
+    <string name="detail_copy_id">Copy transaction ID</string>
+    <string name="detail_copied">Copied!</string>
+    <string name="detail_report_issue">Report an issue</string>
+    <string name="detail_report_issue_unavailable">Reporting an issue isn\'t available yet. Contact your bank about this payment.</string>
+</resources>

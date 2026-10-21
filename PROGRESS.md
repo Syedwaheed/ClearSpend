@@ -80,7 +80,7 @@ Fixed:
 | 1 — Foundation | verified | `ca12960` → `a7867bf` → `e926e4f` → `729609b` | 66 tests, 0 failures (`./gradlew build test`, BUILD SUCCESSFUL in 41s) | Built before this orchestration session; re-verified now (build + test rerun, non-negotiable-rules audit rerun, see below). Committed directly to main, not a phase branch. |
 | 2 — Auth + app shell | verified | `68f0184`, fix `4d8a0cd` | 226 tests, 0 failures (`./gradlew clean build test`, BUILD SUCCESSFUL in 1m55s) | feature:auth:domain/data/presentation + :app shell (Koin, Navigation3, deep link, biometric, splash). `4d8a0cd` fixes a core:network bypass the user caught in review — see "Fixes applied after Phase 2" below. |
 | 3 — Dashboard | verified | `7383b8a` | 603 tests, 0 failures (`./gradlew clean build test`, BUILD SUCCESSFUL in 2m51s) | Home, Accounts, Account Detail, Card + bottom nav. Pulled forward Phase 4's TransactionRepositoryImpl (Home/Account Detail need it). See Phase 3 section below. |
-| 4 — Transactions | in-progress | branch `feature/transactions` (not yet pushed) | — | feature:transactions:data (TransactionRepositoryImpl + mappers + DTOs) already exists from Phase 3 — this phase is now mainly feature:transactions:domain (merge/filter/search/pagination/grouping) + presentation (screens 12-16). First phase built on its own branch — see "Conventions established" above. |
+| 4 — Transactions | verified | branch `feature/transactions` (see Phase 4 section for hash) | 799 tests, 0 failures (`./gradlew clean build test` → transient `:app:packageDebug` flake, rerun `./gradlew build test` → BUILD SUCCESSFUL in 1m 12s) | Screens 12-16 in feature:transactions:presentation + transactions domain use cases. First phase built on its own branch. See Phase 4 section below. |
 | 5 — Send Money | todo | — | — | — |
 | 6 — Analytics | todo | — | — | — |
 | 7 — Polish | todo | — | — | — |
@@ -250,7 +250,55 @@ re-verified in this session.
   sign-out (Phase 7); `feature/transactions/domain/MyClass.kt` placeholder
   left for Phase 4.
 
+## Phase 4 — Transactions
+
+Built by a dispatched subagent (general-purpose), continuing from an
+interrupted earlier run's uncommitted domain work (audited, kept, tests
+added). Independently re-verified in this session.
+
+- **Build/test (reproduced independently):** `./gradlew clean build test`
+  hit the known `:app:packageDebug` flake (`BUILD FAILED in 1m 40s`, only
+  that task); immediate rerun `./gradlew build test` → `BUILD SUCCESSFUL in
+  1m 12s`, 1630 actionable tasks; aggregated JUnit XML `tests=799 skipped=0
+  failures=0 errors=0` (603→799). Instrumented `TransactionsScreensTest`
+  (7 tests) passed on emulator-5554 per the subagent ("OK (7 tests)").
+- **Audit (reproduced independently, 67 changed .kt files):** no
+  `kotlin.Result`, `.toUi(`, `@Ignore`, `Double`, `Route` in feature
+  modules, hand-built URLs, sensitive logging, feature→feature deps, or
+  gradle/catalog version changes; `feature:transactions:domain` uses only
+  `clearspend.jvm.library`. £ literals appear only in `@Preview` fixtures and
+  KDoc. No secrets in the diff; `local.properties` not staged.
+- **States:** Transactions has Skeleton/Empty (incl. no search results)/
+  Error/Offline + 401→Connect Bank; Detail has Skeleton/Error/Offline +
+  401→Connect Bank (no Empty: a single item; not found = Error).
+- **Screenshot comparison (emulator-5554, real composables fed through the
+  real use cases + mappers by the instrumented test):** 12, 13, 14, 15, 16
+  matched by the subagent; orchestrator personally compared 12 (top +
+  groups), 15 and 16 against the PNGs: layout, colours, chips, dashed
+  pending card, day nets, DD-only "manage in Bills" row all match. Live
+  sandbox data not reachable — TrueLayer returns "Invalid redirect_uri"
+  (needs human, below).
+- **Deviations (accepted):** "Debit card" without •••• last4 (no card number
+  on transactions); In/Out/Net summary covers loaded 30-day windows, not the
+  whole period; raw domain rows for client-side search/filter held in a
+  private ViewModel field, only touched inside sequential `handleAction`
+  flows, reloaded after process death (reviewer may want this moved to a
+  Room-backed query later); initial load skipped on restore only when
+  restored content exists; "Report an issue" shows a "not available yet"
+  toast (no spec); Cash rows show "Cash / ATM" per §6; `Transaction.
+  providerReference` added (DB v1→v2, destructive fallback, cache only).
+- **Watch:** `TransactionsUiState` holds the full loaded list — with "All"
+  and many pages it could approach the Bundle size limit.
+- **Left undone:** Bills route still a placeholder (Phase 6); no
+  pull-to-refresh gesture (Retry/Refresh actions exist).
+
 ## Needs human (cumulative)
+
+- **Register `clearspend://callback` as an allowed redirect URI in the
+  TrueLayer Console** — the sandbox auth page currently shows "Invalid
+  redirect_uri", blocking live-data checks of every screen.
+- An emulator is now attached (`emulator-5554`), so visual checks from
+  Phase 4 onward use real on-device captures.
 
 - No Android emulator/device in this environment — every phase's visual
   screenshot comparison and on-device flows (OAuth login, biometric

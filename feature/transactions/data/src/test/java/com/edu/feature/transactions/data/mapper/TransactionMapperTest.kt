@@ -4,6 +4,7 @@ import com.edu.core.domain.model.TransactionCategory
 import com.edu.core.domain.model.TransactionType
 import com.edu.feature.transactions.data.remote.dto.RunningBalanceDto
 import com.edu.feature.transactions.data.remote.dto.TransactionDto
+import com.edu.feature.transactions.data.remote.dto.TransactionMetaDto
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -86,5 +87,31 @@ class TransactionMapperTest {
         val domain = mapper.toDomain("acc", dto, false)!!
 
         assertEquals(domain, mapper.fromEntity(mapper.toEntity(domain)))
+    }
+
+    @Test
+    fun `Should keep credit amounts positive`() {
+        val credit = dto.copy(amount = BigDecimal("420.00"), transactionType = "CREDIT", transactionCategory = "CREDIT")
+
+        assertEquals(BigDecimal("420.00"), mapper.toDomain("acc", credit, false)!!.amount)
+    }
+
+    @Test
+    fun `Should read the provider reference from meta`() {
+        val withMeta = dto.copy(meta = TransactionMetaDto(providerReference = " RENT JUNE "))
+
+        assertEquals("RENT JUNE", mapper.toDomain("acc", withMeta, false)!!.providerReference)
+    }
+
+    @Test
+    fun `Should leave the provider reference null When meta is missing`() {
+        assertNull(mapper.toDomain("acc", dto, false)!!.providerReference)
+    }
+
+    @Test
+    fun `Should round trip the provider reference through the entity`() {
+        val domain = mapper.toDomain("acc", dto.copy(meta = TransactionMetaDto("REF-1")), false)!!
+
+        assertEquals("REF-1", mapper.fromEntity(mapper.toEntity(domain)).providerReference)
     }
 }

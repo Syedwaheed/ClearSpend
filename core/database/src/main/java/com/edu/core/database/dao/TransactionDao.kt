@@ -35,6 +35,10 @@ interface TransactionDao {
     @Query("SELECT * FROM transactions WHERE accountId = :accountId AND isPending = 1 ORDER BY timestampEpochMillis DESC")
     suspend fun getPendingTransactions(accountId: String): List<TransactionEntity>
 
+    /** One cached transaction (settled or pending) — Transaction Detail (14-16) loads by id. */
+    @Query("SELECT * FROM transactions WHERE transactionId = :transactionId LIMIT 1")
+    suspend fun getTransaction(transactionId: String): TransactionEntity?
+
     @Query("DELETE FROM transactions WHERE accountId = :accountId AND isPending = 1")
     suspend fun clearPending(accountId: String)
 

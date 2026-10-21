@@ -26,7 +26,8 @@ class TransactionUiMapperImpl(
     override fun map(domain: Transaction): TransactionUi {
         val method = paymentMethodFor(domain.transactionCategory)
         val classificationLabel = domain.classification.lastOrNull()
-        val time = dateFormatter.formatTime(domain.timestamp)
+        // A pending row has no settled time yet (screen 12 shows "Coffee · Card").
+        val time = if (domain.isPending) null else dateFormatter.formatTime(domain.timestamp)
         val subtitle = listOfNotNull(classificationLabel, time, method.short).joinToString(" · ")
         val isDebit = domain.transactionType == TransactionType.DEBIT
         val title = domain.merchantName?.takeIf { it.isNotBlank() } ?: domain.description
@@ -47,9 +48,13 @@ class TransactionUiMapperImpl(
             initial = title.firstOrNull { it.isLetterOrDigit() }?.uppercase() ?: "•",
             compactSubtitle = "${domain.classification.firstOrNull() ?: categoryLabelFor(domain.transactionCategory)} · $relativeDay",
             relativeDay = relativeDay,
+            paymentMethod = method.label,
+            categoryLabel = categoryLabelFor(domain.transactionCategory),
         )
     }
 
+    // PURCHASE is "Debit card •••• {last4}" in DESIGN_SPEC §6, but the Data API
+    // transaction carries no card number, so the last four digits are omitted.
     private data class PaymentMethod(val label: String, val short: String)
 
     private fun paymentMethodFor(category: TransactionCategory): PaymentMethod = when (category) {
