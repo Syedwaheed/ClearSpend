@@ -5,15 +5,17 @@ phase not marked "verified".
 
 ## Conventions established
 
-- **Branching:** committing phase work directly to `main` (matching the
-  Phase 1 precedent already in git history: commit `a7867bf "Phase 1: audit
-  and build the Foundation layer"`), not stacked `phase-N-<slug>` branches.
-  CLAUDE.md specifies no branching strategy, and the orchestration prompt
-  never describes merging stacked branches back, so direct-to-main with one
-  commit per verified phase is the simplest reversible scheme (each phase is
-  its own commit; `git revert`/`git reset` to any phase's hash is always
-  available). Recorded as a deviation per the orchestration prompt's "make
-  the sensible decision" rule.
+- **Branching (changed starting Phase 4):** each phase now gets its own
+  `feature/<slug>` branch off `main` (e.g. `feature/transactions`,
+  `feature/send-money`), pushed to GitHub at the end of the phase instead of
+  committed straight to `main`. The user opens and reviews the PR themselves
+  (not the AI) — this project doubles as PR-review practice for interviews,
+  so a feature branch + real PR per phase is the point, not a shortcut to
+  avoid. Phases 1-3 were committed directly to `main` before this convention
+  existed (`a7867bf`, `68f0184`/`4d8a0cd`, `7383b8a`) and are not being
+  rewritten; only work from Phase 4 onward uses branches. See
+  `BUILD_PROMPTS.md` "How to use" for the exact steps each phase session
+  follows.
 - **Money:** `BigDecimal` everywhere (never `Double`), GBP minor-unit-safe.
   `Result<D, E>` is `com.edu.core.domain.util.Result`, never `kotlin.Result`.
 - **feature:payments:domain**: Phase 1 removed the old `com.edu.feature.send`
@@ -77,8 +79,8 @@ Fixed:
 |---|---|---|---|---|
 | 1 — Foundation | verified | `ca12960` → `a7867bf` → `e926e4f` → `729609b` | 66 tests, 0 failures (`./gradlew build test`, BUILD SUCCESSFUL in 41s) | Built before this orchestration session; re-verified now (build + test rerun, non-negotiable-rules audit rerun, see below). Committed directly to main, not a phase branch. |
 | 2 — Auth + app shell | verified | `68f0184`, fix `4d8a0cd` | 226 tests, 0 failures (`./gradlew clean build test`, BUILD SUCCESSFUL in 1m55s) | feature:auth:domain/data/presentation + :app shell (Koin, Navigation3, deep link, biometric, splash). `4d8a0cd` fixes a core:network bypass the user caught in review — see "Fixes applied after Phase 2" below. |
-| 3 — Dashboard | verified | (pending commit — see below) | 603 tests, 0 failures (`./gradlew clean build test`, BUILD SUCCESSFUL in 2m51s) | Home, Accounts, Account Detail, Card + bottom nav. Pulled forward Phase 4's TransactionRepositoryImpl (Home/Account Detail need it). See Phase 3 section below. |
-| 4 — Transactions | todo | — | — | — |
+| 3 — Dashboard | verified | `7383b8a` | 603 tests, 0 failures (`./gradlew clean build test`, BUILD SUCCESSFUL in 2m51s) | Home, Accounts, Account Detail, Card + bottom nav. Pulled forward Phase 4's TransactionRepositoryImpl (Home/Account Detail need it). See Phase 3 section below. |
+| 4 — Transactions | in-progress | branch `feature/transactions` (not yet pushed) | — | feature:transactions:data (TransactionRepositoryImpl + mappers + DTOs) already exists from Phase 3 — this phase is now mainly feature:transactions:domain (merge/filter/search/pagination/grouping) + presentation (screens 12-16). First phase built on its own branch — see "Conventions established" above. |
 | 5 — Send Money | todo | — | — | — |
 | 6 — Analytics | todo | — | — | — |
 | 7 — Polish | todo | — | — | — |
