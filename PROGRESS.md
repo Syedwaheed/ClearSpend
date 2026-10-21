@@ -21,13 +21,63 @@ phase not marked "verified".
   since there was no real logic yet to preserve. Phase 5 builds it fresh
   under `com.edu.feature.payments.*`.
 
+## Fixes applied after Phase 2 (before starting Phase 3)
+
+The user caught a real architecture-consistency defect in the Phase 2 diff:
+`TrueLayerAuthApi` (feature:auth:data) hand-built its own request URL and
+rolled its own exception/status-to-`DataError` mapping instead of going
+through `core:network`'s shared `safeCall`/`constructRoute` (which every
+other new API class, e.g. `TrueLayerUserInfoApi`, correctly used). Its
+mapping had also quietly drifted from the shared one (it mapped 400/403/429
+to values the shared `responseToResult` didn't even have cases for).
+
+Fixed:
+- `core/network/.../HttpClientExt.kt`: `safeCall`/`responseToResult` now take
+  an optional `statusOverride: (Int) -> DataError.NetworkError?` so an
+  endpoint with genuinely different status semantics (OAuth 400
+  `invalid_grant` → UNAUTHORIZED) can say so without a second
+  exception-handling implementation. Added the missing 429→TOO_MANY_REQUESTS
+  and 413→PAYLOAD_TOO_LARGE cases, a `HttpRequestTimeoutException` →
+  REQUEST_TIMEOUT catch, and widened the NO_INTERNET catch to plain
+  `java.io.IOException` (not just Ktor's `UnresolvedAddressException`) —
+  all three were real gaps in the Phase 1 helper, not just this bug.
+- `core/network/.../HttpClientFactory.kt`: `buildUnauthenticatedHttpClient`
+  now takes a `baseUrl` and sets `BaseUrlKey` like `buildHttpClient` does, so
+  every `HttpClient` in the app — not just the authenticated one — supports
+  `constructRoute`.
+- `feature/auth/data/.../TrueLayerAuthApi.kt`: rewritten to call the shared
+  `safeCall`/`constructRoute` with a `statusOverride`, deleting its
+  module-local `postToken`/`toResult` duplicate.
+- `AuthDataModule.kt` / `TrueLayerAuthApiTest.kt`: updated for the new
+  `buildUnauthenticatedHttpClient(baseUrl, engine)` signature.
+- Added tests: 429/413 mapping, `statusOverride` precedence and fallback
+  (`core:network`), all existing `TrueLayerAuthApiTest` cases re-verified.
+- **CLAUDE.md §2 and §4** and **BUILD_PROMPTS.md Part A** updated with an
+  explicit rule: `core:network` is the only place that builds a route or
+  maps a Ktor exception/status to `DataError.NetworkError`; a `*:data`
+  module extends `core:network` instead of reinventing this, even for an
+  endpoint with unusual needs. This rule is now baked into every future
+  phase subagent's dispatch prompt (it's in Part A, which every phase
+  dispatch includes verbatim) and into this orchestrator's own per-phase
+  audit going forward.
+- Re-ran `./gradlew clean build test` after the fix: `BUILD SUCCESSFUL in
+  1m 55s`, aggregated JUnit XML `tests=226 skipped=0 failures=0 errors=0`
+  (222 + the 4 new core:network tests). One earlier run failed at
+  `:app:packageDebug` ("IncrementalSplitterRunnable") — retrying just that
+  task in isolation succeeded immediately, and a second full `clean build
+  test` passed clean, confirming it was a transient packaging/file-lock
+  flake (this environment has Android Studio open on the same project),
+  not caused by the code change. No commit message/phase number changes:
+  this lands as a small follow-up commit on top of Phase 2, since Phase 2
+  itself is otherwise sound and already verified.
+
 ## Phase Status
 
 | Phase | Status | Commit(s) | Tests | Notes |
 |---|---|---|---|---|
 | 1 — Foundation | verified | `ca12960` → `a7867bf` → `e926e4f` → `729609b` | 66 tests, 0 failures (`./gradlew build test`, BUILD SUCCESSFUL in 41s) | Built before this orchestration session; re-verified now (build + test rerun, non-negotiable-rules audit rerun, see below). Committed directly to main, not a phase branch. |
-| 2 — Auth + app shell | verified | (pending commit — see below) | 222 tests, 0 failures (`./gradlew clean build test`, BUILD SUCCESSFUL in 2m1s) | feature:auth:domain/data/presentation + :app shell (Koin, Navigation3, deep link, biometric, splash). See Phase 2 section below for full detail. |
-| 3 — Dashboard | todo | — | — | — |
+| 2 — Auth + app shell | verified | `68f0184` | 222 tests, 0 failures (`./gradlew clean build test`, BUILD SUCCESSFUL in 2m1s) | feature:auth:domain/data/presentation + :app shell (Koin, Navigation3, deep link, biometric, splash). See Phase 2 section below for full detail. |
+| 3 — Dashboard | in-progress | — | — | — |
 | 4 — Transactions | todo | — | — | — |
 | 5 — Send Money | todo | — | — | — |
 | 6 — Analytics | todo | — | — | — |

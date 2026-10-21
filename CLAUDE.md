@@ -54,7 +54,14 @@ Room database, DAOs, entities
 
 :core:network
 Ktor HttpClient setup, base API config,
-TrueLayer auth interceptor, token refresh
+TrueLayer auth interceptor, token refresh.
+The ONLY place that builds a request URL
+(`HttpClient.constructRoute`) or maps a Ktor
+exception/HTTP status to `DataError.NetworkError`
+(`safeCall` / `responseToResult`, plus the
+`get`/`post`/`delete` extensions built on them).
+See §4 Layer Rules "data" for what this means for
+every `*:data` module.
 
 :core:data
 Shared repository implementations
@@ -182,6 +189,22 @@ If it is missing from those plugins, add it there
 - **data** — Android library. Implements domain
   repository interfaces, owns Ktor network calls
   and Room/DataStore access, maps DTOs to domain models.
+  Every Ktor call goes through `core:network`'s shared
+  `HttpClient.get`/`post`/`delete` extensions (or, when an
+  endpoint needs something those don't support — a
+  non-JSON body, a different `HttpClient`, endpoint-specific
+  status handling — through `safeCall`/`constructRoute`
+  directly, e.g. `TrueLayerAuthApi`'s form-encoded
+  `/connect/token` call with a `statusOverride`). A
+  `*:data` module must NEVER hand-build a request URL,
+  re-implement exception-to-`DataError` mapping, or give a
+  response-status table of its own: that logic has exactly
+  one home (`core/network/.../ktorclient/HttpClientExt.kt`),
+  and a second copy of it is a bug waiting to drift from the
+  first. If an endpoint's needs genuinely don't fit the
+  existing helpers, extend `core:network` (add a parameter,
+  a new small helper, a new status case) rather than
+  reinventing it in the feature module.
 - **presentation** — Android + Compose.
   Screens, ViewModels, UI state, UI models, and UI mappers.
   Domain models are pure Kotlin and NOT Parcelable, so

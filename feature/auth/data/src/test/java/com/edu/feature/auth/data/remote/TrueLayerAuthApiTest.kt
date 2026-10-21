@@ -26,7 +26,8 @@ class TrueLayerAuthApiTest {
     private fun api(handler: suspend MockRequestHandleScope.(HttpRequestData) -> HttpResponseData) =
         TrueLayerAuthApi(
             httpClient = buildUnauthenticatedHttpClient(
-                MockEngine { request ->
+                baseUrl = "${testAuthConfig.authBaseUrl}/",
+                engine = MockEngine { request ->
                     lastRequest = request
                     handler(request)
                 },

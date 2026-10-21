@@ -61,20 +61,30 @@ fun buildHttpClient(
  * token and NO refresh plugin: a 401/400 from the token endpoint must surface to
  * the caller instead of triggering a refresh loop. Logging is disabled because
  * request and response bodies contain auth codes, secrets and tokens.
+ *
+ * [baseUrl] is carried the same way [buildHttpClient] carries its base URL (via
+ * [BaseUrlKey]), so callers use the same shared [com.edu.core.network.ktorclient.constructRoute] /
+ * [com.edu.core.network.ktorclient.safeCall] helpers instead of hand-building URLs.
+ * Pass it with a trailing slash (e.g. `"https://auth.truelayer-sandbox.com/"`).
  */
 fun buildUnauthenticatedHttpClient(
+    baseUrl: String,
     engine: HttpClientEngine = CIO.create(),
-): HttpClient = HttpClient(engine) {
-    install(ContentNegotiation) {
-        json(
-            Json {
-                ignoreUnknownKeys = true
-                isLenient = true
-            },
-        )
+): HttpClient {
+    val client = HttpClient(engine) {
+        install(ContentNegotiation) {
+            json(
+                Json {
+                    ignoreUnknownKeys = true
+                    isLenient = true
+                },
+            )
+        }
+        install(HttpTimeout) {
+            requestTimeoutMillis = 15_000
+        }
+        expectSuccess = false
     }
-    install(HttpTimeout) {
-        requestTimeoutMillis = 15_000
-    }
-    expectSuccess = false
+    client.attributes.put(BaseUrlKey, baseUrl)
+    return client
 }
