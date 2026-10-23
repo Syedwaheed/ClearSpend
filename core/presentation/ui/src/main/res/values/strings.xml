@@ -8,4 +8,23 @@
     <string name="error_serialization">Something went wrong. Please try again.</string>
     <string name="error_disk_full">Not enough storage space on your device.</string>
     <string name="error_unknown">An unknown error occurred.</string>
+
+    <!-- DESIGN_SPEC §7 shared states -->
+    <string name="state_error_title">Couldn\'t load your data</string>
+    <string name="state_error_body">Check your connection and try again.</string>
+    <string name="state_error_retry">Try again</string>
+    <string name="offline_banner">Showing data from %1$s</string>
+
+    <!-- Shared composables -->
+    <string name="balance_card_total_available">Total Available Balance</string>
+    <string name="balance_card_current">Current Balance: %1$s</string>
+    <string name="balance_card_overdraft">Overdraft: %1$s available</string>
+    <string name="balance_card_updated">Updated %1$s</string>
+    <string name="account_card_sort_code">Sort code: %1$s</string>
+
+    <string name="nav_home">Home</string>
+    <string name="nav_accounts">Accounts</string>
+    <string name="nav_send">Send money</string>
+    <string name="nav_transactions">Transactions</string>
+    <string name="nav_analytics">Analytics</string>
 </resources>

@@ -1,13 +1,9 @@
-
-
 plugins {
     alias(libs.plugins.clearspend.android.ui.feature)
 }
 
 android {
     namespace = "com.edu.feature.accounts.presentation"
-
-
 }
 
 dependencies {

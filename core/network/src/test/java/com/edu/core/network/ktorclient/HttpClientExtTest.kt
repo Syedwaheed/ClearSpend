@@ -7,6 +7,8 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.request.get
+import io.ktor.client.request.url
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
@@ -101,5 +103,47 @@ class HttpClientExtTest {
         val result = client.get<PingDto>("/ping")
 
         assertEquals(Result.Error(DataError.NetworkError.SERIALIZATION), result)
+    }
+
+    @Test
+    fun `get maps 429 to TOO_MANY_REQUESTS`() = runTest {
+        val client = clientRespondingWith(HttpStatusCode.TooManyRequests)
+
+        val result = client.get<PingDto>("/ping")
+
+        assertEquals(Result.Error(DataError.NetworkError.TOO_MANY_REQUESTS), result)
+    }
+
+    @Test
+    fun `get maps 413 to PAYLOAD_TOO_LARGE`() = runTest {
+        val client = clientRespondingWith(HttpStatusCode.PayloadTooLarge)
+
+        val result = client.get<PingDto>("/ping")
+
+        assertEquals(Result.Error(DataError.NetworkError.PAYLOAD_TOO_LARGE), result)
+    }
+
+    @Test
+    fun `safeCall statusOverride takes precedence over the default status mapping`() = runTest {
+        val client = clientRespondingWith(HttpStatusCode.BadRequest)
+
+        val result = safeCall<PingDto>(
+            statusOverride = { status -> if (status == 400) DataError.NetworkError.UNAUTHORIZED else null },
+        ) {
+            client.get { url(client.constructRoute("/ping")) }
+        }
+
+        assertEquals(Result.Error(DataError.NetworkError.UNAUTHORIZED), result)
+    }
+
+    @Test
+    fun `safeCall statusOverride returning null falls back to default mapping`() = runTest {
+        val client = clientRespondingWith(HttpStatusCode.NotFound)
+
+        val result = safeCall<PingDto>(statusOverride = { null }) {
+            client.get { url(client.constructRoute("/ping")) }
+        }
+
+        assertEquals(Result.Error(DataError.NetworkError.NOT_FOUND), result)
     }
 }

@@ -14,6 +14,7 @@ private object PreferenceKeys {
     val LAST_LOGIN_EPOCH_MILLIS = longPreferencesKey("last_login_epoch_millis")
     val BIOMETRIC_ENABLED = booleanPreferencesKey("biometric_enabled")
     val NOTIFICATIONS_ENABLED = booleanPreferencesKey("notifications_enabled")
+    val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
 }
 
 class DataStoreUserPreferencesStorage(
@@ -47,4 +48,11 @@ class DataStoreUserPreferencesStorage(
 
     override fun observeNotificationsEnabled(): Flow<Boolean> =
         dataStore.data.map { it[PreferenceKeys.NOTIFICATIONS_ENABLED] ?: true }
+
+    override suspend fun setOnboardingCompleted(completed: Boolean) {
+        dataStore.edit { it[PreferenceKeys.ONBOARDING_COMPLETED] = completed }
+    }
+
+    override fun observeOnboardingCompleted(): Flow<Boolean> =
+        dataStore.data.map { it[PreferenceKeys.ONBOARDING_COMPLETED] ?: false }
 }

@@ -4,8 +4,6 @@ plugins {
 
 android {
     namespace = "com.edu.feature.dashboard.presentation"
-
-
 }
 
 dependencies {

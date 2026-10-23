@@ -17,4 +17,5 @@ data class TransactionEntity(
     val classification: List<String>,
     val runningBalance: String?,
     val isPending: Boolean,
+    val providerReference: String? = null,
 )

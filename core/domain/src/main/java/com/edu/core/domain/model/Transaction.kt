@@ -32,4 +32,6 @@ data class Transaction(
     val classification: List<String> = emptyList(),
     val runningBalance: BigDecimal? = null,
     val isPending: Boolean = false,
+    /** `meta.provider_reference` when the provider sends one (Transaction Detail "Reference"). */
+    val providerReference: String? = null,
 )

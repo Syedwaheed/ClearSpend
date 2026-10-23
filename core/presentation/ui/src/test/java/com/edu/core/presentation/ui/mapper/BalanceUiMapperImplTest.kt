@@ -40,6 +40,19 @@ class BalanceUiMapperImplTest {
         assertFalse(result.hasOverdraft)
         assertNull(result.formattedOverdraft)
         assertEquals("16 Sep 2026", result.formattedUpdateDate)
+        assertEquals("£0.00", result.formattedOverdraftLimit)
+    }
+
+    @Test
+    fun `map formats the update time relative to now`() {
+        val balance = Balance(
+            accountId = "acc-1",
+            available = BigDecimal.ONE,
+            current = BigDecimal.ONE,
+            updateTimestamp = Instant.parse("2026-09-15T23:58:00Z"),
+        )
+
+        assertEquals("2 min ago", mapper.map(balance).formattedUpdatedAgo)
     }
 
     @Test

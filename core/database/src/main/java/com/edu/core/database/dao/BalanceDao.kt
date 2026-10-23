@@ -12,6 +12,9 @@ interface BalanceDao {
     @Query("SELECT * FROM balances WHERE accountId = :accountId")
     fun observeBalance(accountId: String): Flow<BalanceEntity?>
 
+    @Query("SELECT * FROM balances WHERE accountId = :accountId")
+    suspend fun getBalance(accountId: String): BalanceEntity?
+
     @Upsert
     suspend fun upsert(balance: BalanceEntity)
 

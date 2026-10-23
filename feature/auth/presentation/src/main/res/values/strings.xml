@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Onboarding 02-04 -->
+    <string name="onboarding_1_title">Connect all your accounts</string>
+    <string name="onboarding_1_body">Securely link your UK bank accounts using Open Banking technology.</string>
+    <string name="onboarding_2_title">Understand your spending</string>
+    <string name="onboarding_2_body">See exactly where your money goes with automatic transaction categorisation.</string>
+    <string name="onboarding_3_title">Send money instantly</string>
+    <string name="onboarding_3_body">Transfer money to anyone in the UK via Open Banking Faster Payments.</string>
+    <string name="onboarding_next">Next</string>
+    <string name="onboarding_get_started">Get Started</string>
+    <string name="onboarding_have_account">Already have an account?</string>
+    <string name="onboarding_sign_in">Sign in</string>
+    <string name="onboarding_page_indicator">Page %1$d of %2$d</string>
+
+    <!-- Connect bank 05 -->
+    <string name="app_title">ClearSpend</string>
+    <string name="connect_title">Connect your bank</string>
+    <string name="connect_subtitle">We use TrueLayer\'s FCA-regulated Open Banking to securely access your data</string>
+    <string name="connect_feature_encryption">Bank-level encryption</string>
+    <string name="connect_feature_fca">FCA Regulated</string>
+    <string name="connect_feature_read_only">Read-only access</string>
+    <string name="connect_cta">Connect Your Bank</string>
+    <string name="connect_redirect_hint">You\'ll be redirected to your bank to securely log in</string>
+    <string name="connect_supported_banks">Supported banks</string>
+    <string name="connect_terms">By continuing you agree to our Terms of Service and Open Banking Disclosure</string>
+    <string name="connect_banks_error">Couldn\'t load the bank list.</string>
+
+    <!-- Bank selection 06 -->
+    <string name="bank_select_title">Choose your bank</string>
+    <string name="bank_select_search_hint">Search for your bank...</string>
+    <string name="bank_select_dont_see">Don\'t see your bank?</string>
+    <string name="bank_select_back">Back</string>
+    <string name="bank_select_empty_title">No banks found</string>
+    <string name="bank_select_empty_body">Nothing matches \"%1$s\". Check the spelling or browse every bank.</string>
+    <string name="bank_select_empty_cta">Show all banks</string>
+    <string name="bank_select_launch_error">Couldn\'t open a browser to sign in to your bank.</string>
+
+    <!-- Shared error state (DESIGN_SPEC §7) -->
+    <string name="error_title">Couldn\'t load your data</string>
+    <string name="error_body">Check your connection and try again.</string>
+    <string name="error_try_again">Try again</string>
+
+    <!-- Connecting 07 -->
+    <string name="connecting_title">Connecting to your bank…</string>
+    <string name="connecting_subtitle">Exchanging secure token with TrueLayer</string>
+    <string name="connecting_connected">Connected</string>
+    <string name="connecting_error_title">Couldn\'t connect your bank</string>
+    <string name="connecting_error_security">For your security we stopped this sign-in because it didn\'t match the one we started. Please start again.</string>
+    <string name="connecting_error_cancelled">The connection was cancelled at your bank. You can start again whenever you\'re ready.</string>
+    <string name="connecting_error_rejected">Your bank sign-in has expired or was already used. Please start again.</string>
+    <string name="connecting_error_no_internet">You appear to be offline. Check your connection and try again.</string>
+    <string name="connecting_error_timeout">TrueLayer took too long to respond. Please try again.</string>
+    <string name="connecting_error_server">TrueLayer is having trouble right now. Please try again.</string>
+    <string name="connecting_error_unknown">Something went wrong while connecting. Please try again.</string>
+    <string name="connecting_start_again">Start again</string>
+
+    <!-- Biometric 08 -->
+    <string name="biometric_welcome_named">Welcome back, %1$s</string>
+    <string name="biometric_welcome">Welcome back</string>
+    <string name="biometric_last_login">Last login: %1$s</string>
+    <string name="biometric_touch_to_unlock">Touch to unlock</string>
+    <string name="biometric_tap_to_unlock_pin">Tap to unlock with your PIN</string>
+    <string name="biometric_use_pin">Use PIN instead</string>
+    <string name="biometric_sign_in_differently">Sign in differently</string>
+    <string name="biometric_unlock">Unlock</string>
+    <string name="biometric_prompt_title">Unlock ClearSpend</string>
+    <string name="biometric_prompt_subtitle">Confirm it\'s you to see your accounts</string>
+    <string name="biometric_prompt_cancel">Cancel</string>
+    <string name="biometric_no_lock_screen">Quick unlock needs a screen lock. Set one up in your device settings, or sign in with your bank instead.</string>
+    <string name="biometric_locked_out">Too many attempts. Use your PIN or try again later.</string>
+    <string name="biometric_failed">Couldn\'t confirm it\'s you. Please try again.</string>
+</resources>

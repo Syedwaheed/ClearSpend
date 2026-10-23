@@ -13,4 +13,11 @@ interface TransactionRepository {
     ): Result<List<Transaction>, DataError>
 
     suspend fun getPendingTransactions(accountId: String): Result<List<Transaction>, DataError>
+
+    /**
+     * One transaction (settled or pending) by `transaction_id`, from the local
+     * cache that every list load fills. The Data API has no single-transaction
+     * endpoint. [DataError.NetworkError.NOT_FOUND] when it is not cached.
+     */
+    suspend fun getTransaction(transactionId: String): Result<Transaction, DataError>
 }

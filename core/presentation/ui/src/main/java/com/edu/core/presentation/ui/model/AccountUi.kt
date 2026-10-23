@@ -15,4 +15,6 @@ data class AccountUi(
     val providerLogoUri: String?,
     val accountTypeBadge: String,
     val accountTypeColorArgb: Int,
+    /** "house" / "star" / "briefcase" (DESIGN_SPEC §6 account_type → icon). */
+    val accountTypeIconId: String = "",
 ) : Parcelable

@@ -17,4 +17,11 @@ fun DependencyHandlerScope.addUiLayerDependency(project: Project){
 
     "implementation"(project.libs.findLibrary("androidx-navigation3-ui").get())
     "implementation"(project.libs.findLibrary("androidx-lifecycle-viewmodel-savedstate").get())
+    "implementation"(project.libs.findLibrary("androidx-compose-material-icons-extended").get())
+    "implementation"(project.libs.findLibrary("kotlinx-coroutines-core").get())
+
+    // Every presentation module tests its ViewModels and UiMappers the same way (CLAUDE.md §14).
+    "testImplementation"(project.libs.findLibrary("kotlinx-coroutines-test").get())
+    "testImplementation"(project.libs.findLibrary("mockk").get())
+    "testImplementation"(project.libs.findLibrary("turbine").get())
 }

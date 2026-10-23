@@ -54,7 +54,14 @@ Room database, DAOs, entities
 
 :core:network
 Ktor HttpClient setup, base API config,
-TrueLayer auth interceptor, token refresh
+TrueLayer auth interceptor, token refresh.
+The ONLY place that builds a request URL
+(`HttpClient.constructRoute`) or maps a Ktor
+exception/HTTP status to `DataError.NetworkError`
+(`safeCall` / `responseToResult`, plus the
+`get`/`post`/`delete` extensions built on them).
+See §4 Layer Rules "data" for what this means for
+every `*:data` module.
 
 :core:data
 Shared repository implementations
@@ -182,6 +189,22 @@ If it is missing from those plugins, add it there
 - **data** — Android library. Implements domain
   repository interfaces, owns Ktor network calls
   and Room/DataStore access, maps DTOs to domain models.
+  Every Ktor call goes through `core:network`'s shared
+  `HttpClient.get`/`post`/`delete` extensions (or, when an
+  endpoint needs something those don't support — a
+  non-JSON body, a different `HttpClient`, endpoint-specific
+  status handling — through `safeCall`/`constructRoute`
+  directly, e.g. `TrueLayerAuthApi`'s form-encoded
+  `/connect/token` call with a `statusOverride`). A
+  `*:data` module must NEVER hand-build a request URL,
+  re-implement exception-to-`DataError` mapping, or give a
+  response-status table of its own: that logic has exactly
+  one home (`core/network/.../ktorclient/HttpClientExt.kt`),
+  and a second copy of it is a bug waiting to drift from the
+  first. If an endpoint's needs genuinely don't fit the
+  existing helpers, extend `core:network` (add a parameter,
+  a new small helper, a new status case) rather than
+  reinventing it in the feature module.
 - **presentation** — Android + Compose.
   Screens, ViewModels, UI state, UI models, and UI mappers.
   Domain models are pure Kotlin and NOT Parcelable, so
@@ -1087,13 +1110,18 @@ https://auth.truelayer-sandbox.com/
   &client_id={CLIENT_ID}
   &scope=info accounts balance cards transactions direct_debits standing_orders offline_access
   &redirect_uri=clearspend://callback
-  &providers=mock
+  &providers=uk-cs-mock uk-ob-all uk-oauth-all
   &state={RANDOM_STATE}
 ```
-(scopes are space-separated and URL-encoded when the URL
-is built; generate a random `state`, keep it in memory or
-SavedStateHandle, and reject the callback if it does not
-match)
+(scopes and providers are space-separated and URL-encoded
+when the URL is built. `uk-cs-mock` is the sandbox Mock
+bank (login john / doe) and is ALWAYS included in sandbox.
+With no bank picked on Bank Selection (06) the providers
+are `uk-cs-mock uk-ob-all uk-oauth-all` (DESIGN_SPEC §1.1);
+picking a bank sends `uk-cs-mock <provider_id>`, e.g.
+`uk-cs-mock ob-barclays` (DESIGN_SPEC §1.3). Generate a
+random `state`, keep it until the callback arrives, and
+reject the callback if it does not match; it is single-use.)
 
 Step 2 — Open Chrome Custom Tab with URL
 

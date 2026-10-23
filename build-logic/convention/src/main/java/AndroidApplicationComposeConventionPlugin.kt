@@ -10,6 +10,7 @@ class AndroidApplicationComposeConventionPlugin: Plugin<Project> {
         target.run {
             pluginManager.apply("clearspend.android.application")
             pluginManager.apply("org.jetbrains.kotlin.plugin.compose")
+            pluginManager.apply("org.jetbrains.kotlin.plugin.parcelize")
             val extensions = extensions.getByType<ApplicationExtension>()
             configureAndroidCompose(extensions)
         }

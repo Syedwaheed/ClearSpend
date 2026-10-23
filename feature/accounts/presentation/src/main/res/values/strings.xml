@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 10 Accounts -->
+    <string name="accounts_title">My Accounts</string>
+    <string name="accounts_refresh">Refresh</string>
+    <string name="accounts_syncing">Syncing…</string>
+    <plurals name="accounts_net_position">
+        <item quantity="one">Net position across %d account</item>
+        <item quantity="other">Net position across %d accounts</item>
+    </plurals>
+    <string name="accounts_this_month">%1$s this month</string>
+    <string name="accounts_current">CURRENT</string>
+    <string name="accounts_savings">SAVINGS</string>
+    <string name="accounts_card_owed">CARD OWED</string>
+    <plurals name="accounts_consent_renews">
+        <item quantity="one">Consent renews in %d day</item>
+        <item quantity="other">Consent renews in %d days</item>
+    </plurals>
+    <string name="accounts_consent_expired">Consent has expired</string>
+    <string name="accounts_synced_ago">Synced %1$s via TrueLayer</string>
+    <string name="accounts_synced_never">Connected via TrueLayer</string>
+    <string name="accounts_renew">Renew</string>
+    <string name="accounts_filter_all">All</string>
+    <string name="accounts_filter_current">Current</string>
+    <string name="accounts_filter_savings">Savings</string>
+    <string name="accounts_filter_business">Business</string>
+    <string name="accounts_avail">avail.</string>
+    <string name="accounts_overdraft">OVERDRAFT</string>
+    <string name="accounts_interest_aer">INTEREST (AER)</string>
+    <string name="accounts_thirty_day">30-DAY</string>
+    <string name="accounts_not_available">—</string>
+    <string name="accounts_credit_cards">Credit cards</string>
+    <string name="accounts_card_used">%1$s of %2$s used</string>
+    <string name="accounts_card_due">%1$s due %2$s</string>
+    <string name="accounts_connect_another_bank">Connect another bank</string>
+    <string name="accounts_filter_empty">No accounts of this type</string>
+    <string name="accounts_empty_title">No accounts yet</string>
+    <string name="accounts_empty_body">Connect a bank to see your accounts here.</string>
+    <string name="accounts_empty_cta">Connect a bank</string>
+
+    <!-- 11 Account detail -->
+    <string name="detail_back">Back</string>
+    <string name="detail_available_balance">Available Balance</string>
+    <string name="detail_current">CURRENT</string>
+    <string name="detail_overdraft">OVERDRAFT</string>
+    <string name="detail_account_details">ACCOUNT DETAILS</string>
+    <string name="detail_sort_code">Sort code</string>
+    <string name="detail_account_number">Account number</string>
+    <string name="detail_iban">IBAN</string>
+    <string name="detail_currency">Currency</string>
+    <string name="detail_copy">Copy</string>
+    <string name="detail_copied">Copied!</string>
+    <string name="detail_recent_activity">RECENT ACTIVITY</string>
+    <string name="detail_no_activity">No transactions in the last 30 days</string>
+    <string name="detail_view_all">View all transactions</string>
+    <string name="detail_title_fallback">Account</string>
+
+    <!-- 21 Card -->
+    <string name="card_title">Card</string>
+    <string name="card_cardholder">CARDHOLDER</string>
+    <string name="card_available">AVAILABLE</string>
+    <string name="card_current">CURRENT</string>
+    <string name="card_utilisation">Credit Utilization</string>
+    <string name="card_of_limit">%1$s of %2$s limit</string>
+    <string name="card_payment_due">Payment of %1$s due %2$s</string>
+    <string name="card_last_statement">Last statement balance: %1$s</string>
+    <string name="card_tap_hint">Card. Tap to flip the theme.</string>
+    <string name="card_empty_title">No cards connected</string>
+    <string name="card_empty_body">Cards from your bank will appear here.</string>
+</resources>

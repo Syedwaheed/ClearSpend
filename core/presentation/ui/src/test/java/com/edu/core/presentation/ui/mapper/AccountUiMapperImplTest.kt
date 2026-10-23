@@ -77,4 +77,17 @@ class AccountUiMapperImplTest {
         assertEquals("BUSINESS", mapper.map(businessTransaction).accountTypeBadge)
         assertEquals("BUS. SAVINGS", mapper.map(businessSavings).accountTypeBadge)
     }
+
+    @Test
+    fun `map picks the account type icon`() {
+        val account = Account(
+            accountId = "acc-5",
+            accountType = AccountType.BUSINESS_TRANSACTION,
+            displayName = "Business current",
+            provider = Provider(providerId = "mock", displayName = "Mock Bank"),
+            accountNumber = AccountNumber(),
+        )
+
+        assertEquals("briefcase", mapper.map(account).accountTypeIconId)
+    }
 }

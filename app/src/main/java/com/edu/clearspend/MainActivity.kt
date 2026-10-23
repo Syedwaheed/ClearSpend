@@ -1,47 +1,67 @@
 package com.edu.clearspend
 
+import android.content.Intent
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.runtime.getValue
+import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.edu.clearspend.deeplink.AuthRedirectParser
+import com.edu.clearspend.navigation.ClearSpendNavHost
 import com.edu.core.presentation.designsystem.ClearSpendTheme
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class MainActivity : ComponentActivity() {
+/**
+ * Single activity. FragmentActivity because BiometricPrompt (screen 08) needs
+ * one. Catches `clearspend://callback` and hands it to Connecting (07), whose
+ * ViewModel validates `state` before exchanging the code.
+ */
+class MainActivity : FragmentActivity() {
+
+    private val mainViewModel: MainViewModel by viewModel()
+
+    /** Hash of the last redirect handled, so a recreated activity never replays it. */
+    private var handledRedirectHash: Int? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        super.onCreate(savedInstanceState)
+        handledRedirectHash = savedInstanceState?.takeIf { it.containsKey(KEY_HANDLED) }?.getInt(KEY_HANDLED)
+        handleRedirect(intent)
+
         setContent {
-            ClearSpendTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "ClearSpend",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+            ClearSpendTheme(darkTheme = false) {
+                val pendingRedirect by mainViewModel.pendingRedirect.collectAsStateWithLifecycle()
+                ClearSpendNavHost(
+                    pendingRedirect = pendingRedirect,
+                    onRedirectConsumed = mainViewModel::onRedirectConsumed,
+                )
             }
         }
     }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        handleRedirect(intent)
+    }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    ClearSpendTheme {
-        Greeting("ClearSpend")
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        handledRedirectHash?.let { outState.putInt(KEY_HANDLED, it) }
+    }
+
+    private fun handleRedirect(intent: Intent?) {
+        val data = intent?.dataString ?: return
+        val hash = data.hashCode()
+        if (hash == handledRedirectHash) return
+        val redirect = AuthRedirectParser.parse(data) ?: return
+        handledRedirectHash = hash
+        mainViewModel.onRedirectReceived(redirect)
+    }
+
+    private companion object {
+        const val KEY_HANDLED = "handled_redirect_hash"
     }
 }

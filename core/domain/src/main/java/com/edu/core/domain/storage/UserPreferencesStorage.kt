@@ -14,4 +14,8 @@ interface UserPreferencesStorage {
 
     suspend fun setNotificationsEnabled(enabled: Boolean)
     fun observeNotificationsEnabled(): Flow<Boolean>
+
+    /** Set once the user finishes (or skips) onboarding screens 02-04. */
+    suspend fun setOnboardingCompleted(completed: Boolean)
+    fun observeOnboardingCompleted(): Flow<Boolean>
 }

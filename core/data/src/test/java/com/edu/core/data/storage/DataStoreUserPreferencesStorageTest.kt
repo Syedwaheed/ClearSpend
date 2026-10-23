@@ -74,4 +74,16 @@ class DataStoreUserPreferencesStorageTest {
 
         assertFalse(storage.observeNotificationsEnabled().first())
     }
+
+    @Test
+    fun `observeOnboardingCompleted defaults to false`() = runTest {
+        assertFalse(storage.observeOnboardingCompleted().first())
+    }
+
+    @Test
+    fun `setOnboardingCompleted persists true`() = runTest {
+        storage.setOnboardingCompleted(true)
+
+        assertTrue(storage.observeOnboardingCompleted().first())
+    }
 }

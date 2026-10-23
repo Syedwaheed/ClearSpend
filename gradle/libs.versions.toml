@@ -49,6 +49,7 @@ fbAppDistrtribution = "5.3.0"
 
 coreSplashscreen = "1.2.0"
 browser = "1.10.0"
+biometric = "1.1.0"
 youtubePlayer = "13.0.0"
 googleServicesVersion = "4.5.0"
 
@@ -98,6 +99,7 @@ coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose"
 #SplashScreen
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
 androidx-browser = { group = "androidx.browser", name = "browser", version.ref = "browser" }
+androidx-biometric = { group = "androidx.biometric", name = "biometric", version.ref = "biometric" }
 youtube-player = { group = "com.pierfrancescosoffritti.androidyoutubeplayer", name = "core", version.ref = "youtubePlayer" }
 #Compose-Debug
 androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
