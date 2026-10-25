@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      # local.properties is git-ignored, so CI recreates it (sandbox only).
+      - name: Create local.properties
+        run: |
+          {
+            echo "TRUELAYER_CLIENT_ID=${{ secrets.TRUELAYER_CLIENT_ID }}"
+            echo "TRUELAYER_CLIENT_SECRET=${{ secrets.TRUELAYER_CLIENT_SECRET }}"
+            echo "TRUELAYER_REDIRECT_URI=clearspend://callback"
+            echo "TRUELAYER_SANDBOX=true"
+          } > local.properties
+
+      - name: Unit tests
+        run: ./gradlew test
+
+      - name: Build debug APK
+        run: ./gradlew :app:assembleDebug
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-reports
+          path: "**/build/reports/tests/"
